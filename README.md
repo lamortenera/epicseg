@@ -19,7 +19,7 @@ devtools::install_github("lamortenera/kfoots")
 devtools::install_github("lamortenera/epicseg")
 ```
 
-To use the command line interface to epicseg, you need to create an exectuable to be used with Rscript:
+To use the command line interface to epicseg, you need to create an executable to be used with Rscript:
 
 ```R
 library(epicseg)
