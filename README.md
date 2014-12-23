@@ -8,7 +8,7 @@ Install and load the `devtools` package to be able to directly install R package
 
 ```R
 install.packages("devtools")
-load("devtools")
+library(devtools)
 ```
 
 To install `epicseg` type:
