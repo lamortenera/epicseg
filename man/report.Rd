@@ -41,6 +41,9 @@ report(segments, model, counts = NULL, outdir = ".", prefix = "",
   \item{autoColors}{a list with two fields that controls
   how the colors are automatically assigned to each state.}
 }
+\value{
+The path to the newly created webpage
+}
 \description{
 Produce an html report of a segmentation
 }

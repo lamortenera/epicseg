@@ -31,7 +31,8 @@ getReportOptions <- function(){list(
 reportCLI <- function(args, prog){
 	opt <- parseArgs(getReportOptions(), args, prog)
 	#call report
-	do.call(report, opt)
+	htmlpath <- do.call(report, opt)
+	cat("results written to the file: '", htmlpath, "'\n", sep="")
 }
 
 #' Produce an html report of a segmentation
@@ -57,6 +58,7 @@ reportCLI <- function(args, prog){
 #' the colors are automatically assigned to each state.
 #' @details A web page will be created with plots linked to
 #' 	tables in text format.
+#' @return The path to the newly created webpage
 #' @export
 report <- function(segments, model, counts=NULL, outdir=".", 
 						prefix="", colors=NULL, labels=NULL, annots=list(), 
@@ -101,7 +103,8 @@ report <- function(segments, model, counts=NULL, outdir=".",
 	
 	htmlpath <- makePath(outdir, prefix, "report.html")
 	writeLines(doc, htmlpath)
-	cat("results written to the file: '", htmlpath, "'\n", sep="")
+	
+	htmlpath
 }
 
 makePath <- function(outdir, prefix, last){
