@@ -1,0 +1,14 @@
+\docType{package}
+\name{epicseg}
+\alias{epicseg}
+\alias{epicseg-package}
+\title{Chromatin segmentation}
+\description{
+The package provides methods for finding chromatin states
+in epigenomic data. There is an R interface as well as a
+command line interface.
+}
+\author{
+Alessandro Mammana \email{mammana@molgen.mpg.de}
+}
+
