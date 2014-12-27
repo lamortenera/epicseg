@@ -2,8 +2,8 @@
 \alias{segment}
 \title{Learn a model and produce a segmentation}
 \usage{
-segment(counts, regions, nstates = NULL, model = NULL, train = TRUE,
-  collapseInitP = !train, nthreads = 1, maxiter = 200, ...)
+segment(counts, regions, nstates = NULL, model = NULL, notrain = FALSE,
+  collapseInitP = notrain, nthreads = 1, maxiter = 200, ...)
 }
 \arguments{
   \item{counts}{Count matrix matching with the
@@ -28,7 +28,7 @@ segment(counts, regions, nstates = NULL, model = NULL, train = TRUE,
   learning algorithm. If \code{train==FALSE} the parameter
   set must be complete and no learning will take place.}
 
-  \item{train}{If TRUE, the parameters will be learned,
+  \item{notrain}{If FALSE, the parameters will be learned,
   otherwise the provided parameters (with the \code{model}
   option) will be used without learning to produce a
   segmentation.}

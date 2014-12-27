@@ -19,8 +19,8 @@ getSegmentOptions <- function(){list(
 	all fields must be present and the model is used for producing
 	the segmentation without training.
 	(required if the option '--nstates' is not set)"),
-	list(arg="--predict", flag=TRUE,
-	help="Toggle the predict mode and untoggle the train mode"),
+	list(arg="--notrain", flag=TRUE,
+	help="The provided model will be used 'as-is' without training."),
 	list(arg="--collapseInitP", type="logical", meta="true_or_false",
 	help="In case a model with multiple initial probabilities is provided,
 	should those probabilities be averaged? If you are not sure about what
@@ -49,8 +49,6 @@ segmentCLI <- function(args, prog){
 	#split the options for 'segment' from the options for 'report'
 	sopt <- opt[setdiff(names(opt), subReportOptNames)]
 	ropt <- opt[intersect(names(opt), subReportOptNames)]
-	#deal with 'predict' (its name in the 'segment' function is 'train', so it's the opposite)
-	if (!is.null(sopt$predict)) sopt$train <- !sopt$predict; sopt$predict <- NULL
 	#deal with 'save_rdata'
 	save_rdata <- !is.null(sopt$save_rdata)
 	sopt$save_rdata <- NULL
@@ -86,7 +84,7 @@ advancedOpts <- c("tol","verbose","nbtype","init","init.nlev")
 #' parameters will be used as initial parameters for the learning
 #' algorithm. If \code{train==FALSE} the parameter set must be 
 #' complete and no learning will take place.
-#' @param train If TRUE, the parameters will be learned, otherwise
+#' @param notrain If FALSE, the parameters will be learned, otherwise
 #' the provided parameters (with the \code{model} option) will be 
 #' used without learning to produce a segmentation.
 #' @param collapseInitP In case a model with multiple initial probabilities
@@ -111,7 +109,7 @@ advancedOpts <- c("tol","verbose","nbtype","init","init.nlev")
 #' 	\item{viterbi}{Same as \code{states}, but using the viterbi algorithm.}
 #' 	\item{loglik}{the log-likelihood of the whole dataset.}
 #' @export
-segment <- function(counts, regions, nstates=NULL, model=NULL, train=TRUE, collapseInitP=!train, 
+segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, collapseInitP=notrain, 
 										nthreads=1, maxiter=200, ...){
 	#REFORMAT KFOOTS OPTIONS
 	kfootsOpts <- list(...)
@@ -126,11 +124,11 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, train=TRUE, colla
 	if (is.null(regions) || !inherits(regions, "GRanges")) stop("'regions' must be a GenomicRanges object")
 	#check consistency between regions and counts
 	binsize <- checkBinsize(regions, ncol(counts))
-	if (is.null(model) && !train) stop("no model provided, train mode necessary")
+	if (is.null(model) && notrain) stop("no model provided, training necessary")
 	if (!is.null(model)){
 		#if we can't figure out the number of states from the model
 		#we can completely discard it (it is an empty model)
-		dims <- validateModel(model, input=train)
+		dims <- validateModel(model, input=!notrain)
 		if (is.null(dims$nstates)) model <- NULL
 	}
 	
@@ -168,7 +166,7 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, train=TRUE, colla
 	kfootsOpts$counts <- counts
 	
 	#deal with the 'train' option
-	if (!train){
+	if (notrain){
 		kfootsOpts$maxiter <- 1
 		kfootsOpts$verbose <- FALSE
 	}
@@ -181,7 +179,7 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, train=TRUE, colla
 	#MAKE SEGMENTS
 	segms <- statesToSegments(fit$clusters, regions)
 	#MAKE MODELS
-	if (train){
+	if (!notrain){
 		model <- list(nstates=length(fit$models), marks=rownames(counts), emisP=fit$models, transP=fit$trans, initP=fit$initP)
 	}
 	

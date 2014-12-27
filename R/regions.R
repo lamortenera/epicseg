@@ -31,7 +31,7 @@ readRegions <- function(path) {
 			what[[j]] <- NULL
 		}
 	}
-	regions <- scan(path, what, sep="\t", skip=(i-1), flush=TRUE)
+	regions <- scan(path, what, sep="\t", skip=(i-1), flush=TRUE, quiet=TRUE)
 	
 	gr <- GRanges(seqnames=regions[[1]], IRanges(start=regions[[2]]+1, end=regions[[3]]))
 	#set the name of the regions

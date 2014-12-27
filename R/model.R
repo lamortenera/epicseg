@@ -10,6 +10,7 @@
 #fields must be consistent
 #return a list(nstates, nmarks)
 validateModel <- function(model, input=FALSE){
+  if (is.null(model)) stop("NULL is not a valid model")
 	optArgs <- c("nstates", "marks", "emisP", "transP", "initP")
 	if (is.null(names(model))) stop("model's element must be named")
 	if (!all(names(model) %in% optArgs)) warning("some arguments will be ignored (incorrect naming?)")
