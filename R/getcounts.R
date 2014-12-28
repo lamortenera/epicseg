@@ -90,7 +90,8 @@ getcountsCLI <- function(args, prog){
 #' 	If this flag is set, the 'shift' option will be ignored. 
 #' @param shifts Shift the reads in the 5' direction by a fixed number
 #'	of base pairs. The read will be assigned to the bin where the 
-#'	shifted 5' end of the read is located. 
+#'	shifted 5' end of the read is located. This option is ignored when
+#'  the paired-end mode is active. (default: 75)
 #' @details The \code{mapqs, pairedends, shifts} parameters can be provided
 #' 	once and they will be used for all bam files, or as many times as there
 #' 	are bam files, in which case the i-th path on the list will be matched 
@@ -123,10 +124,7 @@ getcounts <- function(regions, binsize, marks, mapqs=0, pairedends=FALSE, shifts
 		paired.end <- pairedends[i]
 		paired.end.midpoint <- paired.end
 		shift <- shifts[i]
-		if (paired.end && shift != 0){
-			warning(paste0("paired end mode and non-zero shift set for mark", mark, ", setting shift to 0"))
-			shift <- 0
-		}
+		if (paired.end && shift != 0) shift <- 0
 		pileup(regions, path, paired.end=paired.end, paired.end.midpoint=paired.end.midpoint, binsize=binsize, shift=shift, format=F)$counts
 	})
 	

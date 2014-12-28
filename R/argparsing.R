@@ -66,7 +66,7 @@ matchOptsWithArgs <- function(opts, args){
 	allowedNames <- names(opts)
 	allowedAliases <- names(aliases)
 	
-	while (i < len){
+	while (i <= len){
 		arg <- args[i]
 		#get option name taking care of the aliases
 		name <- argName(arg)
@@ -79,7 +79,7 @@ matchOptsWithArgs <- function(opts, args){
 		} 
 		if (!name %in% allowedNames) stop(paste0("invalid option name: ", arg))
 		
-		if (opts[[name]]$flag){
+    if (opts[[name]]$flag){
 			#the option is a flag
 			if (!is.null(values[[name]])) stop("a flag can be specified only once")
 			values[[name]] <- TRUE

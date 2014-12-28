@@ -37,7 +37,9 @@ getcounts(regions, binsize, marks, mapqs = 0, pairedends = FALSE,
 
   \item{shifts}{Shift the reads in the 5' direction by a
   fixed number of base pairs. The read will be assigned to
-  the bin where the shifted 5' end of the read is located.}
+  the bin where the shifted 5' end of the read is located.
+  This option is ignored when the paired-end mode is
+  active. (default: 75)}
 }
 \value{
 A count matrix where the rows are the different marks

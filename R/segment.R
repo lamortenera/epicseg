@@ -66,7 +66,7 @@ segmentCLI <- function(args, prog){
 }
 
 #these options are not available from the CLI and can be set in 'segment' with the ellipsis (...)
-advancedOpts <- c("tol","verbose","nbtype","init","init.nlev")
+advancedOpts <- c("tol","verbose","nbtype","init","init.nlev", "rmin")
 #' Learn a model and produce a segmentation
 #'
 #' @param counts Count matrix matching with the \code{regions} parameter.
@@ -190,13 +190,14 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
 reorderFitStates <- function(fit){
 	nstates <- length(fit$models)
 	#determine a distance matrix between states
+	#in 'mps' rows are states and columns are histone marks
 	mps <- t(log(getMeanMatrix(fit$models) + 1))
-	dmat <- t(as.matrix(dist(mps, method="euclidean")))
+	dmat <- as.matrix(dist(mps, method="euclidean"))
 	#get a small weight path through all the states
 	path <- smallWeightHamiltonianPath(dmat)
 	if (length(path) != nstates) stop("something went wrong..")
 	#let's make state 1 the one with more counts
-	if (sum(mps[,path[1]]) < sum(mps[,path[nstates]])){
+	if (sum(mps[path[1],]) < sum(mps[path[nstates],])){
 		path <- rev(path)
 	}
 	
