@@ -35,7 +35,7 @@ makeBoundingBox <- function(bty, bty.lwd, bty.col, nx, ny){
 
 
 myheat <- function(mat, dev=NULL, L=0.3, L2lheight=0.5, xlab=NULL, ylab=NULL, main=NULL, 
-		col=seq.pal,
+		col=heatpal,
 		zlim=range(mat, na.rm=T), 
 		zlab="value",
 		ck.antialiasing=F,
