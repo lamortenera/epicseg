@@ -146,7 +146,7 @@ reportTrans <- function(transP, modelPath, outdir, prefix){
 reportEranks <- function(eranks, outdir, prefix){
 	paths <- makePath(outdir, prefix, c("eranks.txt", "eranks.png"))
 	#write table
-	write.table(eranks, col.names=T, row.names=F, file=paths[1], quote=F, sep="\t")
+	write.table(eranks, col.names=T, row.names=T, file=paths[1], quote=F, sep="\t")
 	#make plot
 	myheat(t(eranks), xlab="mark", ylab="state", zlab="mean scaled count", main="mean scaled counts", dev=paths[2], col=heatpal, L=0.4, bty="#", bty.col="white")
 	#return html
