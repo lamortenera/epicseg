@@ -62,7 +62,7 @@ Rcpp::IntegerVector smallWeightHamiltonianPath(Rcpp::NumericMatrix dmat){
 	int n = dmat.ncol();
 	if (n <= 1) return Rcpp::IntegerVector(n, n);
 	//adjacency list representation of the graph
-	std::vector<std::vector<int>> graph(n);
+	std::vector<std::vector<int> > graph(n);
 	//connected components of the graph
 	DisjointSets ccs(n);
 	//all possible edges
