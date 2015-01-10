@@ -14,9 +14,9 @@ library(devtools)
 To install `epicseg` type:
 
 ```R
-devtools::install_github("lamortenera/bamsignals")
-devtools::install_github("lamortenera/kfoots")
-devtools::install_github("lamortenera/epicseg")
+install_github("lamortenera/bamsignals")
+install_github("lamortenera/kfoots")
+install_github("lamortenera/epicseg")
 ```
 
 To use the command line interface to epicseg, you need to create an executable to be used with Rscript:
