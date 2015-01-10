@@ -1,7 +1,8 @@
 getGetcountsOptions <- function(){list(
 	list(arg="--regions", type="character", required=TRUE, parser=readRegions,
 	help="Path to the bed file with the genomic regions of interest.
-	Only the first three fields in the file matter. 
+	These regions will be automatically partitioned into smaller, 
+	consecutive bins. Only the first three fields in the file matter. 
 	If the region lengths are not multiples of the given binsize
 	a new bed file will be produced where each coordinate 
 	is a multiple of binsize. Use this new file together with
