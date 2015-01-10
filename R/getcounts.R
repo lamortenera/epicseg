@@ -6,9 +6,6 @@ getGetcountsOptions <- function(){list(
 	a new bed file will be produced where each coordinate 
 	is a multiple of binsize. Use this new file together with
 	the count matrix for later analyses."),
-	list(arg="--binsize", type="integer", required=TRUE, 
-	help="Path to the file with the parameters of the HMM.
-	All fields must be present."),
 	list(arg="--mark", type="character", required=TRUE, vectorial=TRUE, parser=readMarks,
 	help="Mark name and path to a bam file where to extract reads from.
 	The bam files must be indexed and the chromosome names must match with 
@@ -21,6 +18,9 @@ getGetcountsOptions <- function(){list(
 	in '.Rdata' or '.rda', otherwise it will be saved as a text file.
 	Using R archives, writing the file will be a bit slower,
 	but reading it will be considerably faster. (required)"),
+	list(arg="--binsize", type="integer",
+	help="Size of a bin in base pairs. Each given region will be partitioned into
+	bins of this size. (default 200)"),
 	list(arg="--mapq", type="integer", vectorial=TRUE,
 	help="Minimum mapping quality for the reads (see the bam format
 	specification for the mapq field). Only reads with the mapq field
@@ -73,14 +73,13 @@ getcountsCLI <- function(args, prog){
 #' @param regions GRanges object containing the genomic regions of interest.
 #' 	Each region will be divided into non-overlapping bins of equal size.
 #' 	The reads falling in each bin will be the elements of the final count matrix.
+#' @param marks Named list where each item is a path to an indexed bam file.
+#' 	The chromosome names in the bam file must match with the sequence names
+#' 	in the GRanges object.
 #' @param binsize The size of each bin in basepairs. Each region must have
 #' 	a width multiple of \code{binsize}, otherwise an error will be thrown.
 #' 	Use the function \code{refineRegions} to make sure that your GRanges object
 #' 	satisfies this constraint.
-#' 	value for the models. See the item \code{models} in the return values to see how the
-#' @param marks Named list where each item is a path to an indexed bam file.
-#' 	The chromosome names in the bam file must match with the sequence names
-#' 	in the GRanges object.
 #' @param mapqs Threshold on the 'mapq' field in the bam format. Reads
 #' 	with a mapping quality strictly lower than 'mapq' will be discarded.
 #' @param pairedends Set this option to TRUE or FALSE to activate or deactivate
@@ -100,7 +99,7 @@ getcountsCLI <- function(args, prog){
 #' 	labelled with the names of the list \code{marks}, and the columns
 #' 	are the different bins in the regions.
 #' @export
-getcounts <- function(regions, binsize, marks, mapqs=0, pairedends=FALSE, shifts=75){
+getcounts <- function(regions, marks, binsize=200, mapqs=0, pairedends=FALSE, shifts=75){
 	#ARGUMENT CHECKING
 	if (!inherits(regions, "GRanges")) stop("regions must be a GRanges object")
 	if (length(binsize) != 1 || binsize <= 0) stop("invalid binsize")

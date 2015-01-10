@@ -4,7 +4,7 @@
 \alias{getcounts}
 \title{Make a count matrix}
 \usage{
-getcounts(regions, binsize, marks, mapqs = 0, pairedends = FALSE,
+getcounts(regions, marks, binsize = 200, mapqs = 0, pairedends = FALSE,
   shifts = 75)
 }
 \arguments{
@@ -12,15 +12,14 @@ getcounts(regions, binsize, marks, mapqs = 0, pairedends = FALSE,
 Each region will be divided into non-overlapping bins of equal size.
 The reads falling in each bin will be the elements of the final count matrix.}
 
-\item{binsize}{The size of each bin in basepairs. Each region must have
-a width multiple of \code{binsize}, otherwise an error will be thrown.
-Use the function \code{refineRegions} to make sure that your GRanges object
-satisfies this constraint.
-value for the models. See the item \code{models} in the return values to see how the}
-
 \item{marks}{Named list where each item is a path to an indexed bam file.
 The chromosome names in the bam file must match with the sequence names
 in the GRanges object.}
+
+\item{binsize}{The size of each bin in basepairs. Each region must have
+a width multiple of \code{binsize}, otherwise an error will be thrown.
+Use the function \code{refineRegions} to make sure that your GRanges object
+satisfies this constraint.}
 
 \item{mapqs}{Threshold on the 'mapq' field in the bam format. Reads
 with a mapping quality strictly lower than 'mapq' will be discarded.}
