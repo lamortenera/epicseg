@@ -21,7 +21,7 @@ getReportOptions <- function(){list(
 	list(arg="--labels", type="character", parser=readLines,
 	help="Path to a text file containing one short text label
 	per chromatin state. Each label must be on a separate line."),
-	list(arg="--annot", type="character", vectorial=TRUE, parser=readAnnotations,
+	list(arg="--annot", type="character", vectorial=TRUE, parser=readAnnotations, meta="label:path",
 	help="Genomic annotation to compare with the segmentation. It must
 	be specified with a short title (no spaces) and a path to the bed
 	file containing the annotation (the strand matters), separated by ':'.

@@ -51,6 +51,12 @@ makeOptions <- function(optList){
 	opts
 }
 
+convertArg <- function(arg, type){
+	res <- as(arg, type)
+	if (is.na(res)) stop(paste0("failed to convert argument ", arg, " to type ", type))
+	res
+}
+
 matchOptsWithArgs <- function(opts, args){
 	values <- list()
 	i <- 1
@@ -79,7 +85,8 @@ matchOptsWithArgs <- function(opts, args){
 		} 
 		if (!name %in% allowedNames) stop(paste0("invalid option name: ", arg))
 		
-    if (opts[[name]]$flag){
+		#parse the argument value
+		if (opts[[name]]$flag){
 			#the option is a flag
 			if (!is.null(values[[name]])) stop("a flag can be specified only once")
 			values[[name]] <- TRUE
@@ -87,7 +94,7 @@ matchOptsWithArgs <- function(opts, args){
 			#the option is not a flag
 			i <- i+1
 			if (i > len) stop("missing value for the last option")
-			value <- as(args[i], opts[[name]]$type)
+			value <- convertArg(args[i], opts[[name]]$type)
 			values[[name]] <- c(values[[name]], value)
 		}
 		i <- i+1

@@ -7,7 +7,7 @@ getGetcountsOptions <- function(){list(
 	a new bed file will be produced where each coordinate 
 	is a multiple of binsize. Use this new file together with
 	the count matrix for later analyses."),
-	list(arg="--mark", type="character", required=TRUE, vectorial=TRUE, parser=readMarks,
+	list(arg="--mark", type="character", required=TRUE, vectorial=TRUE, parser=readMarks, meta="label:path",
 	help="Mark name and path to a bam file where to extract reads from.
 	The bam files must be indexed and the chromosome names must match with 
 	those specified in the bed file. 
@@ -28,7 +28,7 @@ getGetcountsOptions <- function(){list(
 	above or equal to the specified value will be considered. 
 	Specify this option once for all marks, or specify it as many times 
 	as there are marks. (default 0)"),
-	list(arg="--pairedend", type="logical", vectorial=TRUE,
+	list(arg="--pairedend", type="logical", vectorial=TRUE, meta="true_or_false",
 	help="Set this option to TRUE or FALSE to activate or deactivate
 	the paired-end mode. Only read pairs where both ends
 	are mapped will be considered and assigned to the bin where the 
@@ -47,6 +47,8 @@ getcountsCLI <- function(args, prog){
 	opt <- parseArgs(getGetcountsOptions(), args, prog)
 	#remove the target field (it's not an argument of the R interface)
 	target <- opt$target; opt$target <- NULL
+	#we need to know the binsize in order to know if the regions have to be refined or not
+	if (is.null(opt$binsize)) opt$binsize <- 200
 	#check if the regions are all right
 	if (any(width(opt$regions) %% opt$binsize != 0)) {
 		#regions must be refined
