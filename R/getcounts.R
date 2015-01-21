@@ -48,7 +48,7 @@ getcountsCLI <- function(args, prog){
 	#remove the target field (it's not an argument of the R interface)
 	target <- opt$target; opt$target <- NULL
 	#we need to know the binsize in order to know if the regions have to be refined or not
-	if (is.null(opt$binsize)) opt$binsize <- 200
+	if (is.null(opt$binsize)) opt$binsize <- formals(getcounts)$binsize
 	#check if the regions are all right
 	if (any(width(opt$regions) %% opt$binsize != 0)) {
 		#regions must be refined
@@ -182,7 +182,6 @@ readMarks <- function(marksArg){
 
 validatePath <- function(path){
 	if (!file.create(path)) stop("invalid path specified")
-	file.remove(path)
 	path
 }
 

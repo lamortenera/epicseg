@@ -50,12 +50,12 @@ print_CLI <- function(prog, subprograms){
 #getcountsCLI, in the file getcounts.R
 CLI <- function(args, prog){
 	CLIsubprograms <- list(
+	getcounts=list(desc="Produce a counts matrix from several bam files", fun=getcountsCLI),
 	segment=list(desc="Produce a segmentation and a report", fun=segmentCLI),
-	report=list(desc="Produce a report for a given segmentation", fun=reportCLI),
-	getcounts=list(desc="Produce a counts matrix from several bam files", fun=getcountsCLI))
+	report=list(desc="Produce a report for a given segmentation", fun=reportCLI))
 	
 	if (args[1] %in% names(CLIsubprograms)){
-		CLIsubprograms[[args[1]]]$fun(args[2:length(args)], paste(prog, args[1]))
+		CLIsubprograms[[args[1]]]$fun(args[-1], paste(prog, args[1]))
 	} else {
 		print_CLI(prog, CLIsubprograms)
 		quit(status = 1)

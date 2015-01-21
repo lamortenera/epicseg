@@ -1,24 +1,24 @@
-#this is not the actual complete list of options
-#for segmentCLI: the complete list is a merge between
-#the two lists 'segmentOptions' and 'reportOptions' 
-#which is done in the first lines of 'segmentCLI
-getSegmentOptions <- function(){list(
+excludeOptNames <- c("segments", "model", "counts", "colors", "labels")
+	
+getSegmentOptions <- function(){
+	#this is not the actual complete list of options
+	#for segmentCLI: the complete list is a merge between
+	#the two lists 'getSegmentOptions()' and 'getReportOptions()' 
+	#minus the options specified in excludeOptNames
+	list(
 	list(arg="--counts", type="character", required=TRUE, parser=readCounts,
 	help="Path to the count matrix"),
 	list(arg="--regions", type="character", required=TRUE, parser=readRegions,
 	help="Path to the .bed file with the genomic regions associated to 
 	the count matrix. Only the first three fields of the bed file
 	will be read. (required)"),
-	list(arg="--nstates", type="integer",
-	help="Number of states to use for training (required if the option '--model'
-	is not set)"),
+	list(arg="--nstates", type="integer", required=TRUE,
+	help="Number of states to use for training"),
 	list(arg="--model", type="character", parser=readModel,
 	help="Path to the file with the parameters of the HMM.
-	In train mode, the model contains the initial parameters for
-	learning, some fields can be left out. In prediction mode
-	all fields must be present and the model is used for producing
-	the segmentation without training.
-	(required if the option '--nstates' is not set)"),
+	The model contains the initial parameters for learning.
+	If --notrain is set, no learning will take place and all
+	model parameters must be specified."),
 	list(arg="--notrain", flag=TRUE,
 	help="The provided model will be used 'as-is' without training."),
 	list(arg="--collapseInitP", type="logical", meta="true_or_false",
@@ -38,14 +38,11 @@ segmentCLI <- function(args, prog){
 	#name the options in reportOptions
 	reportOptions <- makeOptions(getReportOptions())
 	#options for 'reportCLI' to use also in 'segmentCLI'
-	computedOptNames <- c("segments", "model", "counts")
-	subReportOptNames <- setdiff(names(reportOptions), computedOptNames)
+	subReportOptNames <- setdiff(names(reportOptions), excludeOptNames)
 	#merge the two option lists
 	segmentOptions <- c(getSegmentOptions(), reportOptions[subReportOptNames])
 	#parse the options
 	opt <- parseArgs(segmentOptions, args, prog)
-	#check required arguments
-	if (is.null(opt$nstates) && is.null(opt$model)) stop("provide either 'nstates' or 'model'")
 	#split the options for 'segment' from the options for 'report'
 	sopt <- opt[setdiff(names(opt), subReportOptNames)]
 	ropt <- opt[intersect(names(opt), subReportOptNames)]

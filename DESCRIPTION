@@ -7,10 +7,11 @@ Author: Alessandro Mammana
 Maintainer: Alessandro Mammana <mammana@molgen.mpg.de>
 Description: Package for chromatin segmentation in R and from the command line
 License: GNU licence
-Imports:
+Imports: 
     GenomicRanges,
     Rcpp (>= 0.11.3),
     kfoots,
     bamsignals,
     RColorBrewer
 LinkingTo: Rcpp
+Suggests: testthat

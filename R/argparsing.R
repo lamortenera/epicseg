@@ -117,23 +117,46 @@ matchOptsWithArgs <- function(opts, args){
 	values
 }
 
+
 printUsage <- function(launcherName, opts, progDesc=NULL){
 	if (!is.null(progDesc)) cat(progDesc, fill=TRUE)
-	cat(sub("%prog", launcherName, "usage: %prog [options]"), fill=TRUE)
-	cat("\n")
-	cat("Options:\n")
+	#divide arguments into required and not required
+	reqArgs <- list()
+	optArgs <- list()
 	for (name in names(opts)){
-		opt <- opts[[name]]
+		if (opts[[name]]$required){
+			reqArgs[[name]] <- opts[[name]]
+		} else {
+			optArgs[[name]] <- opts[[name]]
+		}
+	}
+	
+	cat(sub("%prog", launcherName, "usage: %prog [arguments]"), fill=TRUE)
+	cat("\n")
+	
+	printArgument <- function(name, opt){
 		cat(sep="", "  --", name)
 		if (!opt$flag) cat(sep="", " ", opt$meta)
 		if (!is.na(opt$short)) {
 			cat(sep="", ", ", opt$short)
 			if (!opt$flag) cat(sep="", " ", opt$meta)
 		}
-		if (opt$required) cat(sep="", " (required)")
 		if (opt$vectorial) cat(sep="", " (repeatable)")
 		cat("\n\t")
 		cat(opt$help, fill=TRUE)
 		cat("\n")
 	}
+	
+	#print required argument first
+	if (length(reqArgs) > 0){
+		cat("REQUIRED ARGUMENTS:\n")
+		for (name in names(reqArgs)) printArgument(name, reqArgs[[name]])
+	}
+	
+	#print optional arguments
+	if (length(optArgs) > 0){
+		cat("OPTIONAL ARGUMENTS:\n")
+		for (name in names(optArgs)) printArgument(name, optArgs[[name]])
+	}
+	
 }
