@@ -6,7 +6,9 @@ Date: 2014-12-05
 Author: Alessandro Mammana
 Maintainer: Alessandro Mammana <mammana@molgen.mpg.de>
 Description: Package for chromatin segmentation in R and from the command line
-License: GNU licence
+License: GPL-2
+SystemRequirements: C++11 
+Depends: R (>= 3.1.0)
 Imports: 
     GenomicRanges,
     Rcpp (>= 0.11.3),
