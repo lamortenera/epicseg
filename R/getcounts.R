@@ -118,16 +118,18 @@ getcounts <- function(regions, marks, binsize=200, mapqs=0, pairedends=FALSE, sh
 	pairedends <- fixLength(pairedends, nmarks)
 	shifts <- fixLength(shifts, nmarks)
 	
+	
 	cat("getting counts\n")
 	countsList <- lapply(1:nmarks, function(i){
 		path <- marks[[i]]
 		mark <- names(marks)[i]
 		mapq <- mapqs[i]
 		paired.end <- pairedends[i]
-		paired.end.midpoint <- paired.end
 		shift <- shifts[i]
-		if (paired.end && shift != 0) shift <- 0
-		pileup(regions, path, paired.end=paired.end, paired.end.midpoint=paired.end.midpoint, binsize=binsize, shift=shift, format=F)$counts
+		if (paired.end) shift <- 0
+		paired.end <- ifelse(paired.end, "midpoint", "ignore")
+		bprof <- bamProfile(path, regions, paired.end=paired.end, binsize=binsize, shift=shift)
+		unlist(as.list(bprof))
 	})
 	
 	cat("pileup done, storing everything in a matrix\n")
