@@ -14,7 +14,7 @@ library(devtools)
 To install `epicseg` type:
 
 ```R
-install_github("lamortenera/bamsignals")
+install_github("lamortenera/bamsignals", ref="backport")
 install_github("lamortenera/kfoots")
 install_github("lamortenera/epicseg")
 ```
