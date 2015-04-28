@@ -5,8 +5,8 @@ smallWeightHamiltonianPath <- function(dmat) {
     .Call('epicseg_smallWeightHamiltonianPath', PACKAGE = 'epicseg', dmat)
 }
 
-bindCols <- function(vlist) {
-    .Call('epicseg_bindCols', PACKAGE = 'epicseg', vlist)
+bindCols <- function(vlist, nthreads = 1L) {
+    .Call('epicseg_bindCols', PACKAGE = 'epicseg', vlist, nthreads)
 }
 
 writeCountsTXT <- function(counts, marks, path) {
@@ -15,6 +15,34 @@ writeCountsTXT <- function(counts, marks, path) {
 
 avgCountsPerClust <- function(counts, clusts) {
     .Call('epicseg_avgCountsPerClust', PACKAGE = 'epicseg', counts, clusts)
+}
+
+colSummary <- function(mat, type, nthreads = 1L) {
+    .Call('epicseg_colSummary', PACKAGE = 'epicseg', mat, type, nthreads)
+}
+
+getRef <- function(mat, type, nthreads = 1L) {
+    .Call('epicseg_getRef', PACKAGE = 'epicseg', mat, type, nthreads)
+}
+
+quantileNorm <- function(mat, ref, nthreads = 1L, seed = 13L) {
+    .Call('epicseg_quantileNorm', PACKAGE = 'epicseg', mat, ref, nthreads, seed)
+}
+
+clist2mlist <- function(clist, nthreads = 1L) {
+    .Call('epicseg_clist2mlist', PACKAGE = 'epicseg', clist, nthreads)
+}
+
+mlist2clist <- function(mlist, nthreads = 1L) {
+    .Call('epicseg_mlist2clist', PACKAGE = 'epicseg', mlist, nthreads)
+}
+
+testSortCounts <- function(v) {
+    .Call('epicseg_testSortCounts', PACKAGE = 'epicseg', v)
+}
+
+testMeanAndMedian <- function(v, type) {
+    .Call('epicseg_testMeanAndMedian', PACKAGE = 'epicseg', v, type)
 }
 
 statesToSegments_helper <- function(regions, states) {

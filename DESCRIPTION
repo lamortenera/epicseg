@@ -10,10 +10,12 @@ License: GPL-2
 SystemRequirements: C++11 
 Depends: R (>= 3.1.0)
 Imports: 
+    parallel,
     GenomicRanges,
     Rcpp (>= 0.11.3),
     kfoots,
     bamsignals,
-    RColorBrewer
+    RColorBrewer,
+    edgeR
 LinkingTo: Rcpp
 Suggests: testthat
