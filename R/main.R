@@ -120,3 +120,18 @@ rename <- function(l, oldname, newname){
     l
 }
 
+label_sc_path <- function(l_p, unique.labels=FALSE){
+    npaths <- length(l_p)
+    lp <- strsplit(l_p, split=":")
+    lens <- sapply(lp, length)
+    if (any(lens != 2)) {
+        stop(
+        paste0("Invalid input. Expecting input of the form LABEL:PATH, found:\n",
+         l_p[which(lens!=2)[1]]))}
+    lp <- simplify2array(lp)
+    if (unique.labels && anyDuplicated(lp[1,])) {
+        ex <- lp[1,which(duplicated(lp[1,]))[1]]
+        stop(paste0("The following label appeared more than once: ", ex))
+    }
+    data.frame(label=lp[1,], path=lp[2,], stringsAsFactors=F)
+}

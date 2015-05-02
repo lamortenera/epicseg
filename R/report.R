@@ -1,12 +1,13 @@
 getReportOptions <- function(){list(
-    list(arg="--segments", type="character", required=TRUE, parser=readRegions,
+    list(arg="--segments", type="character", required=TRUE, vectorial=TRUE,
     help="Path to the bed file containing the segmentation. The name field
-    in the bed file must be a number from 1 to the maximum number of states."),
+    in the bed file must be a number from 1 to the maximum number of states.
+    More than one path can be provided if the bed files describe alternative
+    segmentations of the same genomic regions and if the paths are labelled, 
+    i.e. of the form LABEL:PATH. "),
     list(arg="--model", type="character",  required=TRUE, parser=readModel,
     help="Path to the file with the parameters of the HMM.
-    All fields must be present (required)."),
-    list(arg="--counts", type="character", parser=readCounts,
-    help="Path to the count matrix used for producing the segmentation."),
+    All fields must be present."),
     list(arg="--outdir", type="character", parser=validateOutdir, default=".",
     help="Path to the folder where all results will be saved. If
     the folder doesn't exist it will be created."),
@@ -30,6 +31,15 @@ getReportOptions <- function(){list(
 
 reportCLI <- function(args, prog){
     opt <- parseArgs(getReportOptions(), args, prog)
+    #deal with the two scenarios for the segmentation specification
+    #unlabelled path to a bed file, acceptable if there is only 1
+    if (length(opt$segments) == 1 && !grepl(":", opt$segments)){
+        opt$segments <- readRegions(opt$segments)
+    } else {#labelled paths to bed files
+        lp <- label_sc_path(opt$segments, unique.labels=TRUE)
+        opt$segments <- 
+            GRangesList(lapply(setNames(lp$path, lp$label), readRegions))
+    }
     #call report
     htmlpath <- do.call(report, opt)
     cat("results written to the file: '", htmlpath, "'\n", sep="")
@@ -37,14 +47,13 @@ reportCLI <- function(args, prog){
 
 #' Produce an html report of a segmentation
 #'
-#' @param segments GRanges object containing the segmentation. The \code{names} slot
-#'     must be a number from 1 to the maximum number of states.
+#' @param segments GRanges or GRangesList object containing the segmentation. 
+#'  If GRanges, the \code{names} slot must be a number from 1 to the maximum 
+#'  number of states. Same is true for the unlisted data in a GRangesList.
+#'  If a GRangesList, the paths to of each bed file will depend on the names
+#'  given by \code{names(segments)}.
 #' @param model A list with the complete set of the parameters that describe
 #' the HMM, such as that returned by the \code{segment} function.
-#' @param counts Count matrix matching with the 'segments' parameter.
-#' The counts will be used to infer the state colors automatically and to
-#' normalize the mean counts matrix (mean level of a certain mark 
-#' in a certain state).
 #' @param outdir Output directory where the report will be created.
 #' @param prefix Prefix prepended to all output files.
 #' @param colors A character vector assigning one color per state.
@@ -55,47 +64,57 @@ reportCLI <- function(args, prog){
 #' @param rdata R objects that will be saved as Rdata archives and will be
 #' part of the report.
 #' @param autoColors a list with two fields that controls how
-#' the colors are automatically assigned to each state.
+#' the colors are automatically assigned to each state. The value \code{NULL}
+#' disables automatic coloring.
 #' @details A web page will be created with plots linked to
 #'     tables in text format.
 #' @return The path to the newly created webpage
 #' @export
-report <- function(segments, model, counts=NULL, outdir=".", 
+report <- function(segments, model, outdir=".", 
                         prefix="", colors=NULL, labels=NULL, annots=list(), 
-                        rdata=NULL, autoColors=defaultAutoColors){
+                        rdata=NULL, autoColors=NULL){
     
     #CHECKING ARGUMENTS
     #you should make sure that when report is called from 'segmentCLI'
     #no error causes the program to abort (all assertions done here
     #should always pass)
-    validateModel(model, input=FALSE)
+    validateModel(model, strict=FALSE)
     nstates <- model$nstates
-    if (is.null(segments) || !inherits(segments, "GRanges")) stop("'segments' must be a GenomicRanges object")
+    #'segmlist' will store the GRangesList object, 'segments' the unlisted data
+    if (inherits(segments, "GRanges")){
+        segmlist <- GRangesList(segments)
+    } else if (inherits(segments, "GRangesList")){
+        segmlist <- segments
+        segments <- unlist(segments, use.names=FALSE)
+        #this is not a complete check, but it should be enough for most purposes
+        ws <- sum(as(width(segmlist), "CompressedNumericList"))
+        if (any(ws != ws[1])) stop("GRanges not on the same genomic regions")
+    } else if (is.null(segments)) { stop("'segments' cannot be NULL")
+    } else stop("'segments' can be a GRangesList or a GRanges object")
+    
     snames <- names(segments)
     if (is.null(snames)) stop("segments must be annotated with the state number")
     inames <- as.integer(snames)
     if (any(is.na(inames) | inames <= 0 | inames > nstates)) stop("invalid segment names")
-    if (!is.null(counts)){
-        validateCounts(counts)
-        checkBinsize(segments, ncol(counts))
-        model <- matchModelToCounts(model, counts)
-    }
     if (!all(sapply(annots, inherits, what="GRanges"))) stop("'annots' must be a list of GenomicRanges objects")
     if (length(annots) > 0 && is.null(names(annots))) stop("'annots' elements must be named")
     validateOutdir(outdir)
     #SANITIZING INPUT
     #no errors allowed from here on, at most warnings
     prefix <- sanitizeFilename(prefix)
+    if (!is.null(colors) && !is.null(autoColors)) {
+        colors <- automaticColoring(getMeanMatrix(model$emisP), autoColors)
+    }
+    colors <- pickColors(nstates, colors)
     labels <- pickLabels(nstates, labels)
-    colors <- pickColors(nstates, colors, counts, segments, autoColors)
     
     #DOING REPORT
     doc <- c(
         htmlHeader("EpiCSeg report"), 
         "<center>",
         reportRdata(rdata, outdir, prefix),
-        reportModel(model, labels, counts, outdir, prefix),
-        reportSegm(segments, labels, colors, outdir, prefix),
+        reportModel(model, labels, outdir, prefix),
+        reportSegmList(segmlist, labels, colors, outdir, prefix),
         reportAnnots(annots, segments, labels, colors, outdir, prefix),
         "</center>",
         htmlFooter())
@@ -135,6 +154,16 @@ reportMeans <- function(means, modelPath, outdir, prefix){
     htmlImgLink(path, modelPath)
 }
 
+reportLMeans <- function(lmeans, outdir, prefix){
+    paths <- makePath(outdir, prefix, c("lmeans.txt", "lmeans.png"))
+    #write table
+    write.table(lmeans, col.names=T, row.names=T, file=paths[1], quote=F, sep="\t")
+    #make plot
+    myheat(t(lmeans), xlab="mark", ylab="state", zlab="log(mean count + 1)", main="log of mean counts", dev=paths[2], col=heatpal, L=0.4, bty="#", bty.col="white")
+    #return html
+    htmlImgLink(paths[2], paths[1])
+}
+
 reportTrans <- function(transP, modelPath, outdir, prefix){
     path <- makePath(outdir, prefix, "transP.png")
     #plot transition probabilities
@@ -143,18 +172,8 @@ reportTrans <- function(transP, modelPath, outdir, prefix){
     htmlImgLink(path, modelPath)
 }
 
-reportEranks <- function(eranks, outdir, prefix){
-    paths <- makePath(outdir, prefix, c("eranks.txt", "eranks.png"))
-    #write table
-    write.table(eranks, col.names=T, row.names=T, file=paths[1], quote=F, sep="\t")
-    #make plot
-    myheat(t(eranks), xlab="mark", ylab="state", zlab="mean scaled count", main="mean scaled counts", dev=paths[2], col=heatpal, L=0.4, bty="#", bty.col="white")
-    #return html
-    htmlImgLink(paths[2], paths[1])
-}
 
-#the 'counts' variable can be NULL
-reportModel <- function(model, labels, counts, outdir, prefix){
+reportModel <- function(model, labels, outdir, prefix){
     #setting the right labels
     names(model$emisP) <- labels
     rownames(model$transP) <- labels
@@ -175,36 +194,38 @@ reportModel <- function(model, labels, counts, outdir, prefix){
     
     nbs_html <- reportNBs(nbs, modelPath, outdir, prefix)
     means_html <- reportMeans(means[marksOrder,], modelPath, outdir, prefix)
+    lmeans_html <- reportLMeans(lmeans[marksOrder,], outdir, prefix)
     trans_html <- reportTrans(model$transP, modelPath, outdir, prefix)
-    eranks_html <- NULL
-    if (!is.null(counts)){
-        eranks <- expRankMatrix(counts, means, nbs[2,])
-        eranks_html <- reportEranks(eranks[marksOrder,], outdir, prefix)
-    }
     
     htmlSection("1. Model parameters",
         paste(sep="\n",
         nbs_html,"<br>",
-        htmlMatToTable(valign="top", matrix(nrow=1, c(means_html, eranks_html, trans_html)))
+        htmlMatToTable(valign="top", matrix(nrow=1, c(means_html, lmeans_html, trans_html)))
         )
     )
 }
 
-reportSegm <- function(segments, labels, colors, outdir, prefix){
+reportSegmList <- function(segmlist, labels, colors, outdir, prefix){
     nstates <- length(colors)
     #write colors
     colorsPath <- makePath(outdir, prefix, "colors.txt")
     writeColors(colors, colorsPath)
-    #write segments
-    if (all(labels == as.character(1:nstates))){
-        segmPath <- makePath(outdir, prefix, "segmentation.bed")
+    #decide paths
+    if (length(segmlist)==1 || is.null(names(segmlist))){
+        segmPaths <- makePath(outdir, prefix, "segmentation.bed")
     } else {
-        #if the segments are labelled, we don't overwrite segmentations.bed, 
-        #but we create a new file called segmentations_labelled.bed
-        segmPath <- makePath(outdir, prefix, "segmentation_labelled.bed")
+        if (is.null(names(segmlist))) names(segmlist) <- 1:length(segmlist)
+        segmPaths <- makePath(outdir, prefix, paste0("segmentation_", names(segmlist), ".bed"))
     }
-    segmentsToBed(segments, labels, col2bedCol(colors), segmPath)
+    if (any(labels != as.character(1:nstates))) {
+        segmPaths <- gsub(".bed$", "_labelled.bed", segmPaths) }
+    
+    for (i in seq_along(segmlist)){
+        segmentsToBed(segmlist[[i]], labels, col2bedCol(colors), segmPaths[i])
+    }
+    
     #write table
+    segments <- unlist(segmlist, use.names=FALSE)
     tabPaths <- makePath(outdir, prefix, c("table.txt", "table.png"))
     inames <- as.integer(names(segments))
     tab <- kfoots:::sumAt(width(segments), inames, size=nstates, zeroIdx=FALSE)
@@ -215,10 +236,18 @@ reportSegm <- function(segments, labels, colors, outdir, prefix){
                 horiz=TRUE, border=NA, names.arg=rev(labels), las=2)
     dev.off()
     
+    if (length(segmlist)==1) {
+        bedLinks <- htmlLink("segmentation as a .bed file", segmPaths)
+    } else {
+        bedLinks <- paste0(collapse="<br>\n",
+        htmlLink(
+        paste0("segmentation as a .bed file (", names(segmlist), ")"), 
+        segmPaths))
+    }
     htmlSection("2. Segmentation",
         paste(sep="\n",
             htmlLink("state colors", colorsPath),"<br>",
-            htmlLink("segmentation as a .bed file", segmPath),"<br>",
+            bedLinks,"<br>",
             htmlImgLink(tabPaths[2], tabPaths[1])
         )
     )
@@ -259,27 +288,11 @@ pickLabels <- function(nstates, labels){
     labels
 }
 
-pickColors <- function(nstates, colors, counts, segments, autoColors){
+pickColors <- function(nstates, colors){
     #1. try to use user-defined colors
     if (!is.null(colors) && length(colors) != nstates){
             warning("wrong number of state colors provided")
             colors <- NULL
-    }
-    #2. try to use automatic coloring
-    if (is.null(colors) && !is.null(autoColors) && !is.null(counts)){
-        #convert segments to states 
-        #(we had it already in the output of 'segment',
-        #    but we compute it again to make the API simpler)
-        inames <- as.integer(names(segments))
-        binsize <- checkBinsize(segments, ncol(counts))
-        states <- inverse.rle(list(values=inames, lengths=width(segments)/binsize))
-        colors <- 
-        tryCatch({
-            getColors(counts, states, nstates, markToCol=autoColors$markToCol, background=autoColors$background)
-        }, error=function(e){
-            message("automatic state coloring failed")
-            NULL
-        })
     }
     #check if the given colors are valid R colors
     tryCatch(col2bedCol(colors),
@@ -345,13 +358,9 @@ expRankMatrix <- function(counts, means, rs, normalize=T){
 
 #METHODS TO VALIDATE AND SANITIZE ARGUMENTS
 readAnnotations <- function(annotFields){
-    annots <- list()
-    for (annot in strsplit(annotFields, split=":")){
-        if (length(annot) != 2) stop("invalid annotation specification")
-        annot[1] <- sanitizeFilename(annot[1])
-        annots[[annot[1]]] <- readRegions(annot[[2]])
-    }
-    annots
+    lp <- label_sc_path(annotFields, unique.labels=TRUE)
+    lp$label <- sanitizeFilename(lp$label)
+    lapply(setNames(lp$path, lp$label), readRegions)
 }
 
 
@@ -383,6 +392,7 @@ checkWritable <- function(path){
 #output directory by trying to create and delete
 #a dummy file in that directory
 validateOutdir <- function(outdir){
+    if (length(outdir) != 1) stop("expecting a single path")
     path <- file.path(outdir, ".check_path.txt")
     checkWritable(path)
     outdir

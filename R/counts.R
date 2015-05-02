@@ -6,6 +6,8 @@ validateCounts <- function(counts){
 }
 
 validateCList <- function(clist){
+    sapply(clist, validateCounts)
+    if (length(clist) < 2) return(clist)
     marks <- rownames(clist[[1]])
     ncols <- ncol(clist[[1]])
     #make count matrices compatible (i-th row is always the i-th mark)

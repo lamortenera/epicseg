@@ -4,21 +4,18 @@
 \alias{report}
 \title{Produce an html report of a segmentation}
 \usage{
-report(segments, model, counts = NULL, outdir = ".", prefix = "",
-  colors = NULL, labels = NULL, annots = list(), rdata = NULL,
-  autoColors = defaultAutoColors)
+report(segments, model, outdir = ".", prefix = "", colors = NULL,
+  labels = NULL, annots = list(), rdata = NULL, autoColors = NULL)
 }
 \arguments{
-\item{segments}{GRanges object containing the segmentation. The \code{names} slot
-must be a number from 1 to the maximum number of states.}
+\item{segments}{GRanges or GRangesList object containing the segmentation.
+If GRanges, the \code{names} slot must be a number from 1 to the maximum
+number of states. Same is true for the unlisted data in a GRangesList.
+If a GRangesList, the paths to of each bed file will depend on the names
+given by \code{names(segments)}.}
 
 \item{model}{A list with the complete set of the parameters that describe
 the HMM, such as that returned by the \code{segment} function.}
-
-\item{counts}{Count matrix matching with the 'segments' parameter.
-The counts will be used to infer the state colors automatically and to
-normalize the mean counts matrix (mean level of a certain mark
-in a certain state).}
 
 \item{outdir}{Output directory where the report will be created.}
 
@@ -36,7 +33,8 @@ compared with the segmentation.}
 part of the report.}
 
 \item{autoColors}{a list with two fields that controls how
-the colors are automatically assigned to each state.}
+the colors are automatically assigned to each state. The value \code{NULL}
+disables automatic coloring.}
 }
 \value{
 The path to the newly created webpage

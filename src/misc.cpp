@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include <iostream>
 #include <fstream>
-
+#include "clist.hpp"
 
 struct Edge {
     double weight;
@@ -123,6 +123,41 @@ Rcpp::IntegerVector smallWeightHamiltonianPath(Rcpp::NumericMatrix dmat){
     return path;
 }
 
+inline void writeVectors(Rcpp::IntegerVector bigv, Rcpp::List vlist, int nthreads){
+    int nv = vlist.length();
+    std::vector<int> breaks(nv + 1);
+    for (int i = 0, acc = 0; i < nv; ++i){
+        acc += Rcpp::as<Rcpp::IntegerVector>(vlist[i]).length();
+        breaks[i+1] = acc;
+    }
+    if (breaks[nv] != bigv.length()) Rcpp::stop("invalid length");
+    
+    #pragma omp parallel for num_threads(nthreads)
+    for (int i = 0; i < nv; ++i){
+        //if nthreads >> vlist.length() you might want to parallelize better...
+        Rcpp::IntegerVector v = vlist[i];
+        memcpy(bigv.begin() + breaks[i], v.begin(), sizeof(int)*v.length());
+    }
+}
+
+//these 2 functions are unsafe for the following reasons:
+//1. if obj is referenced by more than 1 variable, all variables
+//will be modified (something that never happens in R)
+//2. in setDim, if obj has some dimnames and the new dims are the same as the 
+// old ones the dimnames will be lost for no reason
+//3. there might be other reasons that I don't see
+//of course I wrote them because obj can be a huge vector that I don't want
+//to copy
+
+// [[Rcpp::export]]
+void setDim_unsafe(Rcpp::RObject obj, Rcpp::IntegerVector dims){
+    obj.attr("dim") = dims;
+}
+
+// [[Rcpp::export]]
+void setDimnames_unsafe(Rcpp::RObject obj, Rcpp::List dimnames){
+    obj.attr("dimnames") = dimnames;
+}
 
 // [[Rcpp::export]]
 Rcpp::IntegerMatrix bindCols(Rcpp::List vlist, int nthreads=1){
@@ -138,11 +173,7 @@ Rcpp::IntegerMatrix bindCols(Rcpp::List vlist, int nthreads=1){
     }
     
     Rcpp::IntegerMatrix mat(nrow, ncol);
-    #pragma omp parallel for num_threads(nthreads)
-    for (int i = 0; i < ncol; ++i){
-        Rcpp::IntegerVector v = vlist[i];
-        memcpy(mat.begin() + nrow*i, v.begin(), sizeof(int)*nrow);
-    }
+    writeVectors(mat, vlist, nthreads);
     
     Rcpp::List dimnames(2);
     dimnames[1] = vlist.attr("names");
@@ -151,6 +182,23 @@ Rcpp::IntegerMatrix bindCols(Rcpp::List vlist, int nthreads=1){
     return mat;
 }
 
+// [[Rcpp::export]]
+Rcpp::IntegerMatrix bindCList(Rcpp::List clist, int nthreads=1){
+    if (clist.length()==0) Rcpp::stop("empty list is invalid");
+    int ncounts, nmarks, nbins = -1;
+    std::vector<std::string> rnames;
+    listcubedim(clist, &nmarks, &nbins, &ncounts, rnames);
+    
+    Rcpp::IntegerMatrix bigmat(nmarks, nbins*ncounts);
+    writeVectors(bigmat, clist, nthreads);
+    
+    Rcpp::List dnames = Rcpp::List(2); 
+    dnames[0] = rnames;
+    setDimnames_unsafe(bigmat, dnames);
+    
+    
+    return bigmat;
+}
 
 // [[Rcpp::export]]
 void writeCountsTXT(Rcpp::IntegerMatrix counts, std::vector<std::string> marks, std::string path){

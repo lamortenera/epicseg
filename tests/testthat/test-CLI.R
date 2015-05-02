@@ -98,45 +98,50 @@ test_that("Command line interface",{
     -r tests/data/regions.bed -n 10 --outdir tmpdir")
     
     #check whether the rdata was created
-    expect_true(file.exists(gsub("tmpdir", tmpdir, "tmpdir/rdata.Rdata")))
+    expect_true(file.exists(cmd_sc("tmpdir/rdata.Rdata")))
     
     #REPORT
     truns(
-    "init report -m tmpdir/model.txt 
-    -c tests/data/randomCounts.txt -s tmpdir/segmentation.bed 
+    "init report -m tmpdir/model.txt -s tmpdir/segmentation.bed 
     --outdir tmpdir")
     
     #let's try the colors option
     truns(
     "init report --colors tmpdir/colors.txt 
-    -m tmpdir/model.txt -c tests/data/randomCounts.txt 
-    -s tmpdir/segmentation.bed --outdir tmpdir")
+    -m tmpdir/model.txt -s tmpdir/segmentation.bed --outdir tmpdir")
     #let's try the labels option
     
     writeLines("ale\nmarco\nandrea\ngiacomo\nanna\njuliane\nbarbara\nisabella\nfrancesco\nchiara", 
     file.path(tmpdir, "labels.txt"))
     truns(
     "init report --labels tmpdir/labels.txt 
-    -m tmpdir/model.txt -c tests/data/randomCounts.txt 
-    -s tmpdir/segmentation.bed --outdir tmpdir")
+    -m tmpdir/model.txt -s tmpdir/segmentation.bed --outdir tmpdir")
+    expect_true(file.exists(cmd_sc("tmpdir/segmentation_labelled.bed")))
+    
     
     #let's try multiple annotations
     truns(
     "init report 
     -a genes:bed1 --annot mansegm:bed2
-    -m tmpdir/model.txt -c tests/data/randomCounts.txt 
-    -s tmpdir/segmentation.bed --outdir tmpdir")
+    -m tmpdir/model.txt -s tmpdir/segmentation.bed --outdir tmpdir")
     
     expect_true(file.exists(cmd_sc("tmpdir/annot_genes.txt")))
     expect_true(file.exists(cmd_sc("tmpdir/annot_mansegm.txt")))
     
+    #now try multiple segmentations
+    truns(
+    "init report --labels tmpdir/labels.txt  -o tmpdir -m tmpdir/model.txt 
+    -s seg1:tmpdir/segmentation.bed -s seg2:tmpdir/segmentation.bed
+    -a mansegm:bed2")
+    
 })
 
 
-test_that("normalizecounts",{
+test_that("multiple datasets",{
     #make 3 count matrices
     os <- list(c(1,2,3), c(2,1,3), c(3,2,1))
-    targets <- paste0("tmpdir/cmat", 1:3, ".txt")
+    dsets <- paste0("cmat", 1:3)
+    targets <- file.path("tmpdir", paste0(dsets, ".txt"))
     for (i in seq_along(os)){
         o <- os[[i]]
         mline <- paste0(collapse=" ", "-m ", 
@@ -159,4 +164,12 @@ test_that("normalizecounts",{
     cline <- paste0(collapse=" ", "-c ", newtargets)
     truns(paste0("init normalizecounts ", cline, " -s ", triggerOverwrite))
     expect_true(setequal(list.files(tmpdir), lfOld))
+    
+    #check that the segmentation runs with multiple datasets
+    goodcline <- paste0(collapse=" ", "-c ", dsets, ":", newtargets)
+    truns(paste0("init segment ", goodcline, " -n 5 -r regs.bed -o tmpdir"))
+    
+    #check that without labels it fails!
+    badcline <- paste0(collapse=" ", "-c ", newtargets)
+    tfails(paste0("init segment ", badcline, " -n 5 -r regs.bed -o tmpdir"))
 })

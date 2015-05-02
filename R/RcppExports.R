@@ -5,8 +5,20 @@ smallWeightHamiltonianPath <- function(dmat) {
     .Call('epicseg_smallWeightHamiltonianPath', PACKAGE = 'epicseg', dmat)
 }
 
+setDim_unsafe <- function(obj, dims) {
+    invisible(.Call('epicseg_setDim_unsafe', PACKAGE = 'epicseg', obj, dims))
+}
+
+setDimnames_unsafe <- function(obj, dimnames) {
+    invisible(.Call('epicseg_setDimnames_unsafe', PACKAGE = 'epicseg', obj, dimnames))
+}
+
 bindCols <- function(vlist, nthreads = 1L) {
     .Call('epicseg_bindCols', PACKAGE = 'epicseg', vlist, nthreads)
+}
+
+bindCList <- function(clist, nthreads = 1L) {
+    .Call('epicseg_bindCList', PACKAGE = 'epicseg', clist, nthreads)
 }
 
 writeCountsTXT <- function(counts, marks, path) {

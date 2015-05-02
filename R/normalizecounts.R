@@ -66,11 +66,15 @@ normalizecountsCLI <- function(args, prog){
 #'     rows of each matrix normalized.
 #' @export
 normalizecounts <- function(clist, normFun=quantileNormalization, nthreads=1, ...){
-    sapply(clist, validateCounts)
-    if (length(clist)==1) return(clist)
     clist <- validateCList(clist)
+    if (length(clist)==1) return(clist)
     #convert clist in a list of matrices for each mark with dims [bin, dataset]
     mlist <- clist2mlist(clist, nthreads=nthreads)
+    #if the list was named, set the column names of each element in mlist
+    if (!is.null(names(clist))){
+        dnames <- list(NULL, names(clist))
+        for (i in seq_along(mlist)) setDimnames_unsafe(mlist[[i]], dnames)
+    }
     #apply the function to each mark
     nthreadsOuter <- min(nthreads, length(mlist))
     nthreadsInner <- floor(nthreads/nthreadsOuter)
@@ -79,5 +83,5 @@ normalizecounts <- function(clist, normFun=quantileNormalization, nthreads=1, ..
             nthreads=nthreadsInner, ...)
     } else mlist <- mclapply(mc.cores=nthreadsOuter, mlist, normFun, ...)
     #convert back to a clist
-    mlist2clist(mlist, nthreads=nthreads)
+    setNames(mlist2clist(mlist, nthreads=nthreads), names(clist))
 }

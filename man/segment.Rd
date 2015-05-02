@@ -8,11 +8,11 @@ segment(counts, regions, nstates = NULL, model = NULL, notrain = FALSE,
   collapseInitP = notrain, nthreads = 1, maxiter = 200, ...)
 }
 \arguments{
-\item{counts}{Count matrix matching with the \code{regions} parameter.
-Each row of the matrix represents a mark and each column a bin
-resulting from dividing the genomic regions into non-overlapping
+\item{counts}{Count matrix or list of count matrices matching with the
+\code{regions} parameter. Each row of the matrix represents a mark and each
+column a bin resulting from dividing the genomic regions into non-overlapping
 bins of equal size. The rows of the matrix must be named with the
-name of the mark and the names must be unique.}
+name of the marks and these names must be unique.}
 
 \item{regions}{GRanges object containing the genomic regions of interest.
 Each of these regions corresponds to a set of bins and each bin to a column

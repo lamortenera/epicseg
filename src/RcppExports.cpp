@@ -20,6 +20,32 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// setDim_unsafe
+void setDim_unsafe(Rcpp::RObject obj, Rcpp::IntegerVector dims);
+RcppExport SEXP epicseg_setDim_unsafe(SEXP objSEXP, SEXP dimsSEXP) {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type obj(objSEXP );
+        Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dims(dimsSEXP );
+        setDim_unsafe(obj, dims);
+    }
+    return R_NilValue;
+END_RCPP
+}
+// setDimnames_unsafe
+void setDimnames_unsafe(Rcpp::RObject obj, Rcpp::List dimnames);
+RcppExport SEXP epicseg_setDimnames_unsafe(SEXP objSEXP, SEXP dimnamesSEXP) {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type obj(objSEXP );
+        Rcpp::traits::input_parameter< Rcpp::List >::type dimnames(dimnamesSEXP );
+        setDimnames_unsafe(obj, dimnames);
+    }
+    return R_NilValue;
+END_RCPP
+}
 // bindCols
 Rcpp::IntegerMatrix bindCols(Rcpp::List vlist, int nthreads = 1);
 RcppExport SEXP epicseg_bindCols(SEXP vlistSEXP, SEXP nthreadsSEXP) {
@@ -30,6 +56,22 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< Rcpp::List >::type vlist(vlistSEXP );
         Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
         Rcpp::IntegerMatrix __result = bindCols(vlist, nthreads);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// bindCList
+Rcpp::IntegerMatrix bindCList(Rcpp::List clist, int nthreads = 1);
+RcppExport SEXP epicseg_bindCList(SEXP clistSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< Rcpp::List >::type clist(clistSEXP );
+        Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
+        Rcpp::IntegerMatrix __result = bindCList(clist, nthreads);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

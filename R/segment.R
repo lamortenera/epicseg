@@ -6,8 +6,12 @@ getSegmentOptions <- function(){
     #the two lists 'getSegmentOptions()' and 'getReportOptions()' 
     #minus the options specified in excludeOptNames
     list(
-    list(arg="--counts", type="character", required=TRUE, parser=readCounts,
-    help="Path to the count matrix"),
+    list(arg="--counts", type="character", required=TRUE, vectorial=TRUE,
+    help="Path to the count matrix. To train a model on multiple datasets, 
+    the count matrices must be compatible, i.e. with the same marks and on the
+    same genomic regions. If this option is repeated the paths must be labelled,
+    example:
+    --counts dataset1:path1/counts.txt --counts dataset2:path2/counts.txt"),
     list(arg="--regions", type="character", required=TRUE, parser=readRegions,
     help="Path to the .bed file with the genomic regions associated to 
     the count matrix. Only the first three fields of the bed file
@@ -43,6 +47,13 @@ segmentCLI <- function(args, prog){
     segmentOptions <- c(getSegmentOptions(), reportOptions[subReportOptNames])
     #parse the options
     opt <- parseArgs(segmentOptions, args, prog)
+    #deal with the two scenarios for the 'counts' option
+    if (length(opt$counts)==1 && !grepl(":", opt$counts)){
+        opt$counts <- readCounts(opt$counts)
+    } else {
+        lp <- label_sc_path(opt$counts, unique.labels=TRUE)
+        opt$counts <- lapply(setNames(lp$path, lp$label), readCounts)
+    }
     #split the options for 'segment' from the options for 'report'
     sopt <- opt[setdiff(names(opt), subReportOptNames)]
     ropt <- opt[intersect(names(opt), subReportOptNames)]
@@ -54,7 +65,6 @@ segmentCLI <- function(args, prog){
     #set the computed options for 'report'
     ropt$segments <- segmentation$segments
     ropt$model <- segmentation$model
-    ropt$counts <- sopt$counts
     if (save_rdata) ropt$rdata <- segmentation
     #call 'report'
     cat("producing report\n")
@@ -66,11 +76,11 @@ segmentCLI <- function(args, prog){
 advancedOpts <- c("tol","verbose","nbtype","init","init.nlev", "rmin")
 #' Learn a model and produce a segmentation
 #'
-#' @param counts Count matrix matching with the \code{regions} parameter.
-#' Each row of the matrix represents a mark and each column a bin
-#' resulting from dividing the genomic regions into non-overlapping
+#' @param counts Count matrix or list of count matrices matching with the 
+#' \code{regions} parameter. Each row of the matrix represents a mark and each 
+#' column a bin resulting from dividing the genomic regions into non-overlapping
 #' bins of equal size. The rows of the matrix must be named with the 
-#' name of the mark and the names must be unique.
+#' name of the marks and these names must be unique.
 #' @param regions GRanges object containing the genomic regions of interest.
 #' Each of these regions corresponds to a set of bins and each bin to a column
 #' of the count matrix. The binsize is automatically derived by comparing
@@ -117,15 +127,20 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     }
     kfootsOpts <- c(list(nthreads=nthreads, framework="HMM"), kfootsOpts)
     #CHECK ARGUMENTS
-    validateCounts(counts)
+    if (!is.list(counts)) { 
+        clist <- list(counts)
+    } else clist <- counts
+    validateCList(clist)
+    nmat <- length(clist)
+    if (nmat==0) stop("empty list of count matrices")
     if (is.null(regions) || !inherits(regions, "GRanges")) stop("'regions' must be a GenomicRanges object")
     #check consistency between regions and counts
-    binsize <- checkBinsize(regions, ncol(counts))
+    binsize <- checkBinsize(regions, ncol(clist[[1]]))
     if (is.null(model) && notrain) stop("no model provided, training necessary")
     if (!is.null(model)){
         #if we can't figure out the number of states from the model
         #we can completely discard it (it is an empty model)
-        dims <- validateModel(model, input=!notrain)
+        dims <- validateModel(model, strict=!notrain)
         if (is.null(dims$nstates)) model <- NULL
     }
     
@@ -135,16 +150,17 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
             warning("inconsistent 'nstates' given, using the value provided in the model")
             nstates <- dim$nstates
         }
-        if (!is.null(model$marks) && !is.null(model$emisP)) model <- matchModelToCounts(model, counts)
+        if (!is.null(model$marks) && !is.null(model$emisP)) model <- matchModelToCounts(model, clist[[1]])
         if (!is.null(model$initP)){
             #adapt the initPs to the current set of observations
-            if (!collapseInitP && ncol(model$initP) != length(regions)){
+            nInits <- length(regions)*nmat
+            if (!collapseInitP && ncol(model$initP) != nInits){
                 warning("collapsing the initial probabilities for compatibility")
                 collapseInitP <- TRUE
             }
             if (collapseInitP){
                 avgInitP <- rowMeans(model$initP)
-                model$initP <- matrix(avgInitP, nrow=length(avgInitP), ncol=length(regions))
+                model$initP <- matrix(avgInitP, nrow=length(avgInitP), ncol=nInits)
             }
         }
         nstates <- model$nstates
@@ -158,9 +174,13 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     
     kfootsOpts$maxiter <- maxiter
     #seqlens depend on the genomic regions
-    kfootsOpts$seqlens <- width(regions)/binsize
-    #pass the count matrix
-    kfootsOpts$counts <- counts
+    kfootsOpts$seqlens <- rep(width(regions)/binsize, nmat)
+    #pass the count matrix (join the elements of the list if necessary)
+    if (nmat==1){  kfootsOpts$counts <- clist[[1]]
+    } else {
+        message("concatenating count matrices")
+        kfootsOpts$counts <- bindCList(clist, nthreads)
+    }
     
     #deal with the 'train' option
     if (notrain){
@@ -173,12 +193,29 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     
     #REORDER STATES
     fit <- reorderFitStates(fit)
-    #MAKE SEGMENTS
-    segms <- statesToSegments(fit$clusters, regions)
     #MAKE MODELS
     if (!notrain){
-        model <- list(nstates=length(fit$models), marks=rownames(counts), emisP=fit$models, transP=fit$trans, initP=fit$initP)
+        model <- list(nstates=length(fit$models), marks=rownames(clist[[1]]), emisP=fit$models, transP=fit$trans, initP=fit$initP)
     }
+    
+    if (nmat > 1){
+        #format the data appropriately
+        nbinsSingle <- ncol(kfootsOpts$counts)/nmat
+        #posteriors
+        setDim_unsafe(fit$posteriors, c(nstates, nbinsSingle, nmat))
+        setDimnames_unsafe(fit$posteriors, list(NULL, NULL, names(clist)))
+        #states and viterbi
+        for (v in list(fit$clusters, fit$viterbi$vpath)){
+            setDim_unsafe(v, c(nbinsSingle, nmat))
+            setDimnames_unsafe(v, list(NULL, names(clist)))
+        }
+        #MAKE SEGMENTS as GRangesList
+        segms <- GRangesList(apply(fit$clusters, 2, statesToSegments, regions=regions))
+    } else {
+        #MAKE SEGMENTS as GRanges
+        segms <- statesToSegments(fit$clusters, regions)
+    }
+    
     
     list(segments=segms, model=model, posteriors=fit$posteriors, states=fit$clusters, viterbi=fit$viterbi$vpath, loglik=fit$loglik)
 }

@@ -25,7 +25,7 @@ shortcuts <- list(
     bam1="/project/epigenome/IMR90/H3K4me3.bam",
     bam2="/project/epigenome/IMR90/H3K36me3.bam",
     bam3="/project/epigenome/IMR90/H3K27me3.bam",
-    bed1="/project/ale/home/data/kfoots_paper/data/regions/knownGenes.bed",
-    bed2="/project/ale/home/data/kfoots_paper/data/mansegm/IMR90/mansegm.bed",
+    bed1="/project/ale/home/data/kfoots_paper/data_old/regions/knownGenes.bed",
+    bed2="/project/ale/home/data/kfoots_paper/data_old/mansegm/IMR90/mansegm.bed",
     tests="/project/ale/home/data/epicseg_pkg/tests",
     regs.bed="/project/ale/home/data/epicseg_pkg/tests/data/regions.bed")

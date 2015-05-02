@@ -27,13 +27,10 @@ validateBamtab <- function(bamtab){
 }
 
 makeBamtab <- function(mark_sc_path, shift=NULL, mapq=NULL, pairedend=NULL){
-    npaths <- length(mark_sc_path)
-    mp <- strsplit(mark_sc_path, split=":")
-    if (any(sapply(mp, length) != 2)) stop("invalid mark specification")
-    mp <- simplify2array(mp)
-    bamtab <- data.frame(mark=mp[1,], path=mp[2,], stringsAsFactors=F)
+    lp <- label_sc_path(mark_sc_path)
+    bamtab <- data.frame(mark=lp$label, path=lp$path, stringsAsFactors=F)
     for (nm in names(bamtabDefaults)){
-        if (!is.null(get(nm))) bamtab[[nm]] <- fixLength(get(nm), npaths)
+        if (!is.null(get(nm))) bamtab[[nm]] <- fixLength(get(nm), nrow(bamtab))
     }
     bamtab
 }
