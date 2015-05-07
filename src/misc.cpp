@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "clist.hpp"
+#include <R_ext/Applic.h>
 
 struct Edge {
     double weight;

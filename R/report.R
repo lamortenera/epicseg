@@ -113,7 +113,7 @@ report <- function(segments, model, outdir=".",
         htmlHeader("EpiCSeg report"), 
         "<center>",
         reportRdata(rdata, outdir, prefix),
-        reportModel(model, labels, outdir, prefix),
+        reportModel(model, labels, colors, outdir, prefix),
         reportSegmList(segmlist, labels, colors, outdir, prefix),
         reportAnnots(annots, segments, labels, colors, outdir, prefix),
         "</center>",
@@ -146,34 +146,37 @@ reportNBs <- function(nbs, modelPath, outdir, prefix){
     htmlImgLink(path, modelPath)
 }
 
-reportMeans <- function(means, modelPath, outdir, prefix){
+reportMeans <- function(means, modelPath, statecolors, outdir, prefix){
     path <- makePath(outdir, prefix, "means.png")
     #plot mean matrix
-    myheat(t(means), xlab="mark", ylab="state", zlab="mean count", main="mean counts", dev=path, col=heatpal, L=0.4, bty="#", bty.col="white")
+    myheat(t(means), xlab="mark", ylab="state", zlab="mean count", 
+        main="mean counts", dev=path, col=heatpal, rowCol=statecolors)
     #return html
     htmlImgLink(path, modelPath)
 }
 
-reportLMeans <- function(lmeans, outdir, prefix){
+reportLMeans <- function(lmeans, statecolors, outdir, prefix){
     paths <- makePath(outdir, prefix, c("lmeans.txt", "lmeans.png"))
     #write table
     write.table(lmeans, col.names=T, row.names=T, file=paths[1], quote=F, sep="\t")
     #make plot
-    myheat(t(lmeans), xlab="mark", ylab="state", zlab="log(mean count + 1)", main="log of mean counts", dev=paths[2], col=heatpal, L=0.4, bty="#", bty.col="white")
+    myheat(t(lmeans), xlab="mark", ylab="state", zlab="log(mean count + 1)", 
+        main="log of mean counts", dev=paths[2], col=heatpal,rowCol=statecolors)
     #return html
     htmlImgLink(paths[2], paths[1])
 }
 
-reportTrans <- function(transP, modelPath, outdir, prefix){
+reportTrans <- function(transP, modelPath, statecolors, outdir, prefix){
     path <- makePath(outdir, prefix, "transP.png")
     #plot transition probabilities
-    myheat(transP, xlab="state to", ylab="state from", zlab="probability", main="transition\nmatrix", dev=path, col=heatpal, L=0.4, bty="#", bty.col="white")
+    myheat(transP, xlab="state to", ylab="state from", zlab="probability",
+        main="transition\nmatrix", dev=path, col=heatpal, rowCol=statecolors, 
+        colCol=statecolors)
     #return html
     htmlImgLink(path, modelPath)
 }
 
-
-reportModel <- function(model, labels, outdir, prefix){
+reportModel <- function(model, labels, statecolors, outdir, prefix){
     #setting the right labels
     names(model$emisP) <- labels
     rownames(model$transP) <- labels
@@ -193,9 +196,9 @@ reportModel <- function(model, labels, outdir, prefix){
     writeModel(model, modelPath)
     
     nbs_html <- reportNBs(nbs, modelPath, outdir, prefix)
-    means_html <- reportMeans(means[marksOrder,], modelPath, outdir, prefix)
-    lmeans_html <- reportLMeans(lmeans[marksOrder,], outdir, prefix)
-    trans_html <- reportTrans(model$transP, modelPath, outdir, prefix)
+    means_html <- reportMeans(means[marksOrder,], modelPath, statecolors, outdir, prefix)
+    lmeans_html <- reportLMeans(lmeans[marksOrder,], statecolors, outdir, prefix)
+    trans_html <- reportTrans(model$transP, modelPath, statecolors, outdir, prefix)
     
     htmlSection("1. Model parameters",
         paste(sep="\n",
