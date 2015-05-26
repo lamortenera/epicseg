@@ -72,7 +72,9 @@ avgStateProfile <- function(genes, segm, nstates, before=200, after=200, reflen=
     mat
 }
 
-plotProfile <- function(mat, colors, legend.pos="top", xlab="offset", ylab="number of regions", main="average state profile", xlim=range(xs), ylim=c(0, max(mat)), legend=T, ...){
+plotProfile <- function(mat, colors, legend.pos="top", xlab="offset", 
+    ylab="number of regions", main="average state profile", xlim=range(xs), 
+    ylim=c(0, max(mat)), legend=T, legend.bg=par("bg"), lwd=par("lwd"),...){
     if (is.null(colnames(mat))) stop("colnames(mat) must be set")
     xs <- as.integer(colnames(mat))
     spacer <- abs(xs[1])
@@ -88,10 +90,13 @@ plotProfile <- function(mat, colors, legend.pos="top", xlab="offset", ylab="numb
     }
     
     for (i in 1:nrow(mat)){
-        lines(colnames(mat), mat[i,], col=colors[i])
+        lines(colnames(mat), mat[i,], col=colors[i], lwd=lwd)
     }
     
-    if (legend) legend(legend=gsub("_", " ", rownames(mat)), col=colors, lty=1, x=legend.pos)
+    if (legend) {
+        legend(legend=gsub("_", " ", rownames(mat)), col=colors, lty=1, 
+        x=legend.pos, bg=legend.bg, lwd=lwd)
+    }
   
 }
 

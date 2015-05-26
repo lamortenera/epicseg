@@ -20,6 +20,8 @@ myimage <- function(mat, xlim, ylim, col, border=NA, lty=par("lty"),
     xhigh <- xall[cs+1]
     ylow <- yall[rs]
     yhigh <- yall[rs+1]
+    #in the typical representation of a matrix the first row is at the top
+    ylow <- rev(ylow); yhigh <- rev(yhigh)
     
     #a matrix where for each element of the matrix we have 5 coordinates (bottom-left, top-left, top-right, bottom-right, bottom-left)
     xs <- rbind(xlow, xlow, xhigh, xhigh, xlow, NA)
@@ -150,7 +152,7 @@ domyheat <- function(mat, xlab=NULL, ylab=NULL, main=NULL, col=heatpal,
     }
     #yaxis
     if (!is.null(rownames(mat))){
-        yticks <- rownames(mat)
+        yticks <- rev(rownames(mat))
         axis(side=2, at=(1:ny-.5), labels=yticks, tick=F)
     }
     #xaxis label
@@ -159,7 +161,6 @@ domyheat <- function(mat, xlab=NULL, ylab=NULL, main=NULL, col=heatpal,
     if (!is.null(main)){
         mtext(main, side=3, line=1.5, cex=1.2*par("cex"), font=2, at=mean(c(0, nx)))
     }
-    #if (!is.null(xlab)) mtext(xlab, side=1, line=mar[1]-2.1, cex=par("cex"))
     if (!is.null(xlab)) {
         mtext(xlab, side=1, cex=par("cex"), 
         line=(par("mar")[1]-2.1), at = mean(c(0,nx))) }

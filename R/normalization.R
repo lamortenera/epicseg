@@ -25,7 +25,9 @@ linearNormalization <- function(vmat, sfFun=defaultSFFun, ...){
     sf <- sfFun(vmat, ...)
     
     #scale vectors
-    round(vmat*sf[col(vmat)])
+    res <- round(vmat*sf[col(vmat)])
+    storage.mode(res) <- "integer"
+    res
 }
 
 

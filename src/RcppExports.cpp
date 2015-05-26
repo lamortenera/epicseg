@@ -9,27 +9,21 @@ using namespace Rcpp;
 Rcpp::IntegerVector smallWeightHamiltonianPath(Rcpp::NumericMatrix dmat);
 RcppExport SEXP epicseg_smallWeightHamiltonianPath(SEXP dmatSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type dmat(dmatSEXP );
-        Rcpp::IntegerVector __result = smallWeightHamiltonianPath(dmat);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type dmat(dmatSEXP);
+    __result = Rcpp::wrap(smallWeightHamiltonianPath(dmat));
+    return __result;
 END_RCPP
 }
 // setDim_unsafe
 void setDim_unsafe(Rcpp::RObject obj, Rcpp::IntegerVector dims);
 RcppExport SEXP epicseg_setDim_unsafe(SEXP objSEXP, SEXP dimsSEXP) {
 BEGIN_RCPP
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::RObject >::type obj(objSEXP );
-        Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dims(dimsSEXP );
-        setDim_unsafe(obj, dims);
-    }
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type obj(objSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dims(dimsSEXP);
+    setDim_unsafe(obj, dims);
     return R_NilValue;
 END_RCPP
 }
@@ -37,58 +31,46 @@ END_RCPP
 void setDimnames_unsafe(Rcpp::RObject obj, Rcpp::List dimnames);
 RcppExport SEXP epicseg_setDimnames_unsafe(SEXP objSEXP, SEXP dimnamesSEXP) {
 BEGIN_RCPP
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::RObject >::type obj(objSEXP );
-        Rcpp::traits::input_parameter< Rcpp::List >::type dimnames(dimnamesSEXP );
-        setDimnames_unsafe(obj, dimnames);
-    }
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type obj(objSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type dimnames(dimnamesSEXP);
+    setDimnames_unsafe(obj, dimnames);
     return R_NilValue;
 END_RCPP
 }
 // bindCols
-Rcpp::IntegerMatrix bindCols(Rcpp::List vlist, int nthreads = 1);
+Rcpp::IntegerMatrix bindCols(Rcpp::List vlist, int nthreads);
 RcppExport SEXP epicseg_bindCols(SEXP vlistSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::List >::type vlist(vlistSEXP );
-        Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
-        Rcpp::IntegerMatrix __result = bindCols(vlist, nthreads);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::List >::type vlist(vlistSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    __result = Rcpp::wrap(bindCols(vlist, nthreads));
+    return __result;
 END_RCPP
 }
 // bindCList
-Rcpp::IntegerMatrix bindCList(Rcpp::List clist, int nthreads = 1);
+Rcpp::IntegerMatrix bindCList(Rcpp::List clist, int nthreads);
 RcppExport SEXP epicseg_bindCList(SEXP clistSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::List >::type clist(clistSEXP );
-        Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
-        Rcpp::IntegerMatrix __result = bindCList(clist, nthreads);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::List >::type clist(clistSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    __result = Rcpp::wrap(bindCList(clist, nthreads));
+    return __result;
 END_RCPP
 }
 // writeCountsTXT
 void writeCountsTXT(Rcpp::IntegerMatrix counts, std::vector<std::string> marks, std::string path);
 RcppExport SEXP epicseg_writeCountsTXT(SEXP countsSEXP, SEXP marksSEXP, SEXP pathSEXP) {
 BEGIN_RCPP
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type counts(countsSEXP );
-        Rcpp::traits::input_parameter< std::vector<std::string> >::type marks(marksSEXP );
-        Rcpp::traits::input_parameter< std::string >::type path(pathSEXP );
-        writeCountsTXT(counts, marks, path);
-    }
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type counts(countsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type marks(marksSEXP);
+    Rcpp::traits::input_parameter< std::string >::type path(pathSEXP);
+    writeCountsTXT(counts, marks, path);
     return R_NilValue;
 END_RCPP
 }
@@ -96,161 +78,148 @@ END_RCPP
 Rcpp::NumericMatrix avgCountsPerClust(Rcpp::IntegerMatrix counts, Rcpp::IntegerVector clusts);
 RcppExport SEXP epicseg_avgCountsPerClust(SEXP countsSEXP, SEXP clustsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type counts(countsSEXP );
-        Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type clusts(clustsSEXP );
-        Rcpp::NumericMatrix __result = avgCountsPerClust(counts, clusts);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type counts(countsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type clusts(clustsSEXP);
+    __result = Rcpp::wrap(avgCountsPerClust(counts, clusts));
+    return __result;
+END_RCPP
+}
+// tabf
+Rcpp::IntegerVector tabf(Rcpp::IntegerVector v, bool naRm);
+RcppExport SEXP epicseg_tabf(SEXP vSEXP, SEXP naRmSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type v(vSEXP);
+    Rcpp::traits::input_parameter< bool >::type naRm(naRmSEXP);
+    __result = Rcpp::wrap(tabf(v, naRm));
+    return __result;
+END_RCPP
+}
+// tabf2
+Rcpp::IntegerMatrix tabf2(Rcpp::IntegerVector v1, Rcpp::IntegerVector v2, bool naRm);
+RcppExport SEXP epicseg_tabf2(SEXP v1SEXP, SEXP v2SEXP, SEXP naRmSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type v1(v1SEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type v2(v2SEXP);
+    Rcpp::traits::input_parameter< bool >::type naRm(naRmSEXP);
+    __result = Rcpp::wrap(tabf2(v1, v2, naRm));
+    return __result;
 END_RCPP
 }
 // colSummary
-Rcpp::IntegerVector colSummary(Rcpp::IntegerMatrix mat, std::string type, int nthreads = 1);
+Rcpp::IntegerVector colSummary(Rcpp::IntegerMatrix mat, std::string type, int nthreads);
 RcppExport SEXP epicseg_colSummary(SEXP matSEXP, SEXP typeSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type mat(matSEXP );
-        Rcpp::traits::input_parameter< std::string >::type type(typeSEXP );
-        Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
-        Rcpp::IntegerVector __result = colSummary(mat, type, nthreads);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    __result = Rcpp::wrap(colSummary(mat, type, nthreads));
+    return __result;
 END_RCPP
 }
 // getRef
-Rcpp::IntegerVector getRef(Rcpp::IntegerMatrix mat, std::string type, int nthreads = 1);
+Rcpp::IntegerVector getRef(Rcpp::IntegerMatrix mat, std::string type, int nthreads);
 RcppExport SEXP epicseg_getRef(SEXP matSEXP, SEXP typeSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type mat(matSEXP );
-        Rcpp::traits::input_parameter< std::string >::type type(typeSEXP );
-        Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
-        Rcpp::IntegerVector __result = getRef(mat, type, nthreads);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    __result = Rcpp::wrap(getRef(mat, type, nthreads));
+    return __result;
 END_RCPP
 }
 // quantileNorm
-Rcpp::IntegerMatrix quantileNorm(Rcpp::IntegerMatrix mat, Rcpp::IntegerVector ref, int nthreads = 1, int seed = 13);
+Rcpp::IntegerMatrix quantileNorm(Rcpp::IntegerMatrix mat, Rcpp::IntegerVector ref, int nthreads, int seed);
 RcppExport SEXP epicseg_quantileNorm(SEXP matSEXP, SEXP refSEXP, SEXP nthreadsSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type mat(matSEXP );
-        Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type ref(refSEXP );
-        Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
-        Rcpp::traits::input_parameter< int >::type seed(seedSEXP );
-        Rcpp::IntegerMatrix __result = quantileNorm(mat, ref, nthreads, seed);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type ref(refSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    __result = Rcpp::wrap(quantileNorm(mat, ref, nthreads, seed));
+    return __result;
 END_RCPP
 }
 // clist2mlist
-Rcpp::List clist2mlist(Rcpp::List clist, int nthreads = 1);
+Rcpp::List clist2mlist(Rcpp::List clist, int nthreads);
 RcppExport SEXP epicseg_clist2mlist(SEXP clistSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::List >::type clist(clistSEXP );
-        Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
-        Rcpp::List __result = clist2mlist(clist, nthreads);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::List >::type clist(clistSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    __result = Rcpp::wrap(clist2mlist(clist, nthreads));
+    return __result;
 END_RCPP
 }
 // mlist2clist
-Rcpp::List mlist2clist(Rcpp::List mlist, int nthreads = 1);
+Rcpp::List mlist2clist(Rcpp::List mlist, int nthreads);
 RcppExport SEXP epicseg_mlist2clist(SEXP mlistSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::List >::type mlist(mlistSEXP );
-        Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP );
-        Rcpp::List __result = mlist2clist(mlist, nthreads);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::List >::type mlist(mlistSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    __result = Rcpp::wrap(mlist2clist(mlist, nthreads));
+    return __result;
 END_RCPP
 }
 // testSortCounts
 Rcpp::IntegerVector testSortCounts(Rcpp::IntegerVector v);
 RcppExport SEXP epicseg_testSortCounts(SEXP vSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type v(vSEXP );
-        Rcpp::IntegerVector __result = testSortCounts(v);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type v(vSEXP);
+    __result = Rcpp::wrap(testSortCounts(v));
+    return __result;
 END_RCPP
 }
 // testMeanAndMedian
 int testMeanAndMedian(Rcpp::IntegerVector v, std::string type);
 RcppExport SEXP epicseg_testMeanAndMedian(SEXP vSEXP, SEXP typeSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type v(vSEXP );
-        Rcpp::traits::input_parameter< std::string >::type type(typeSEXP );
-        int __result = testMeanAndMedian(v, type);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type v(vSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    __result = Rcpp::wrap(testMeanAndMedian(v, type));
+    return __result;
 END_RCPP
 }
 // statesToSegments_helper
 Rcpp::List statesToSegments_helper(Rcpp::RObject regions, Rcpp::IntegerVector states);
 RcppExport SEXP epicseg_statesToSegments_helper(SEXP regionsSEXP, SEXP statesSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::RObject >::type regions(regionsSEXP );
-        Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type states(statesSEXP );
-        Rcpp::List __result = statesToSegments_helper(regions, states);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type regions(regionsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type states(statesSEXP);
+    __result = Rcpp::wrap(statesToSegments_helper(regions, states));
+    return __result;
 END_RCPP
 }
 // segmentsToBed
 void segmentsToBed(Rcpp::RObject segments, std::vector<std::string> labels, std::vector<std::string> colors, std::string path);
 RcppExport SEXP epicseg_segmentsToBed(SEXP segmentsSEXP, SEXP labelsSEXP, SEXP colorsSEXP, SEXP pathSEXP) {
 BEGIN_RCPP
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::RObject >::type segments(segmentsSEXP );
-        Rcpp::traits::input_parameter< std::vector<std::string> >::type labels(labelsSEXP );
-        Rcpp::traits::input_parameter< std::vector<std::string> >::type colors(colorsSEXP );
-        Rcpp::traits::input_parameter< std::string >::type path(pathSEXP );
-        segmentsToBed(segments, labels, colors, path);
-    }
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type segments(segmentsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type labels(labelsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type colors(colorsSEXP);
+    Rcpp::traits::input_parameter< std::string >::type path(pathSEXP);
+    segmentsToBed(segments, labels, colors, path);
     return R_NilValue;
 END_RCPP
 }

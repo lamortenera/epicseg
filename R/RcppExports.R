@@ -29,6 +29,14 @@ avgCountsPerClust <- function(counts, clusts) {
     .Call('epicseg_avgCountsPerClust', PACKAGE = 'epicseg', counts, clusts)
 }
 
+tabf <- function(v, naRm = TRUE) {
+    .Call('epicseg_tabf', PACKAGE = 'epicseg', v, naRm)
+}
+
+tabf2 <- function(v1, v2, naRm = TRUE) {
+    .Call('epicseg_tabf2', PACKAGE = 'epicseg', v1, v2, naRm)
+}
+
 colSummary <- function(mat, type, nthreads = 1L) {
     .Call('epicseg_colSummary', PACKAGE = 'epicseg', mat, type, nthreads)
 }

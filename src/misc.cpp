@@ -260,3 +260,49 @@ Rcpp::NumericMatrix avgCountsPerClust(Rcpp::IntegerMatrix counts, Rcpp::IntegerV
     
     return avgs;
 }
+
+//functions for tabulating one or two factors at a decent speed
+
+// [[Rcpp::export]]
+Rcpp::IntegerVector tabf(Rcpp::IntegerVector v, bool naRm=true){
+    if (!Rf_inherits(v, "factor")) Rcpp::stop("expecting a factor");
+    Rcpp::CharacterVector levels = v.attr("levels");
+    int nlevels = levels.length();
+    
+    Rcpp::IntegerVector ans(nlevels);
+    bool outofrange = false;
+    for (int i = 0, e = v.length(); i < e; ++i){
+        if (v[i] <= 0 || v[i] > nlevels) {
+            outofrange = true;
+        } else ++ans[v[i]-1];
+    }
+    
+    if (outofrange && !naRm) Rcpp::stop("there were NAs or values out of range");
+    
+    ans.attr("names") = levels;
+    return ans;
+}
+
+// [[Rcpp::export]]
+Rcpp::IntegerMatrix tabf2(Rcpp::IntegerVector v1, Rcpp::IntegerVector v2, bool naRm=true){
+    if (!Rf_inherits(v1, "factor") || !Rf_inherits(v2, "factor")) Rcpp::stop("expecting factors");
+    if (v1.length() != v2.length()) Rcpp::stop("the two factors must have the same length");
+    Rcpp::CharacterVector levels1 = v1.attr("levels");
+    Rcpp::CharacterVector levels2 = v2.attr("levels");
+    int nlevels1 = levels1.length();
+    int nlevels2 = levels2.length();
+    
+    Rcpp::IntegerMatrix ans(nlevels1, nlevels2);
+    bool outofrange = false;
+    for (int i = 0, e = v1.length(); i < e; ++i){
+        if (v1[i] <= 0 || v1[i] > nlevels1 || 
+            v2[i] <= 0 || v2[i] > nlevels2) {
+            outofrange = true;
+        } else  ++ans(v1[i]-1, v2[i]-1);
+    }
+    
+    if (outofrange && !naRm) Rcpp::stop("there were NAs or values out of range");
+    
+    ans.attr("dimnames") = Rcpp::List::create(levels1, levels2);
+    return ans;
+}

@@ -11,6 +11,9 @@ test_that("multiple datasets works",{
 
     #normalize counts
     clist <- normalizecounts(clist)
+    for (method in c("TMM", "RLE")){
+        normalizecounts(clist, epicseg:::linearNormalization, method=method)
+    }
     
     #make some matching regions
     binsize <- 200
