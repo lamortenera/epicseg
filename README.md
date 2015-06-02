@@ -4,8 +4,14 @@ epicseg
 Chromatin segmentation in R
 ## Installation
 
-Install and load the `devtools` package to be able to directly install R packages hosted on github :
+Install `bamsignals` from Bioconductor
 
+```R
+source("http://bioconductor.org/biocLite.R")
+biocLite("bamsignals")
+```
+
+Install and load the `devtools` package to be able to directly install R packages hosted on github :
 ```R
 install.packages("devtools")
 library(devtools)
@@ -14,7 +20,6 @@ library(devtools)
 To install `epicseg` type:
 
 ```R
-install_github("lamortenera/bamsignals", ref="backport")
 install_github("lamortenera/kfoots")
 install_github("lamortenera/epicseg")
 ```
