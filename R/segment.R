@@ -32,6 +32,11 @@ getSegmentOptions <- function(){
     and TRUE in predict mode)"),
     list(arg="--nthreads", type="integer", default=formals(segment)$nthreads,
     help="Number of threads to be used"),
+    list(arg="--split4speed", type="logical", default=formals(segment)$split4speed,
+    help="Add artificial splits in the input regions to speed-up the 
+    algorithm. This makes sense when the number of regions is small compared
+    to the number of threads. The artificial breaks are used only in the
+    training phase, not in the computation of the final state assignments."),
     list(arg="--maxiter", type="integer", default=formals(segment)$maxiter,
     help="Maximum number of iterations in train mode"),
     list(arg="--save_rdata", flag=TRUE,
@@ -99,6 +104,11 @@ advancedOpts <- c("tol","verbose","nbtype","init","init.nlev", "rmin")
 #' one initial probabilities vector? If you are not sure
 #' about what this means, don't set this option.
 #' @param nthreads number of threads used for learning
+#' @param split4speed add artificial splits in the input regions to improve
+#' the parallelism of the forward-backward algorithm. Usually the results change
+#' very little and the algorithm runs considerably faster, if the number of 
+#' input regions is smaller than the number of threads. See \code{?kfoots} for
+#' more details.
 #' @param maxiter Maximum number of iterations for learning.
 #' @param ... Advanced options for learning. Type
 #' \code{epicseg:::advancedOpts} to see which options are allowed,
@@ -117,7 +127,7 @@ advancedOpts <- c("tol","verbose","nbtype","init","init.nlev", "rmin")
 #'     \item{loglik}{the log-likelihood of the whole dataset.}
 #' @export
 segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, collapseInitP=notrain, 
-                                        nthreads=1, maxiter=200, ...){
+                                    nthreads=1, split4speed=FALSE, maxiter=200, ...){
     #REFORMAT KFOOTS OPTIONS
     kfootsOpts <- list(...)
     if (length(kfootsOpts)>0){
@@ -125,7 +135,7 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
         if (is.null(optNames) || any(is.na(optNames))) stop("the advanced options must be named")
         if (!all(optNames %in% advancedOpts)) stop("check 'epicseg::advancedOpts' for the list of allowed advanced options")
     }
-    kfootsOpts <- c(list(nthreads=nthreads, framework="HMM"), kfootsOpts)
+    kfootsOpts <- c(list(nthreads=nthreads, split4speed=split4speed, framework="HMM"), kfootsOpts)
     #CHECK ARGUMENTS
     if (!is.list(counts)) { 
         clist <- list(counts)
@@ -181,7 +191,6 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
         message("concatenating count matrices")
         kfootsOpts$counts <- bindCList(clist, nthreads)
     }
-    
     #deal with the 'train' option
     if (notrain){
         kfootsOpts$maxiter <- 1
