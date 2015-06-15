@@ -16,7 +16,7 @@ quantileNormalization <- function(vmat, ref=c("median", "min", "mean"), nthreads
 }
 
 defaultSFFun <- function(vmat, method="RLE", ...){
-    edgeR:::calcNormFactors(vmat, method=method, ...)
+    edgeR::calcNormFactors(vmat, method=method, ...)
 }
 
 linearNormalization <- function(vmat, sfFun=defaultSFFun, ...){

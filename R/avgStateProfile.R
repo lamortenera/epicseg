@@ -102,7 +102,7 @@ plotProfile <- function(mat, colors, legend.pos="top", xlab="offset",
 
 #clustmeans is a matrix where the columns are clusters and the rows are marks
 #the rows must be named.
-automaticColoring <- function(clustmeans, markToCol=list(red="H3K4me3", green4="H3K36me3", blue=c("H3K9me3", "H3K27me3"), gold="H3K4me1"), background="gray"){
+automaticColoring <- function(clustmeans, markToCol=list(red="H3K4me3", green4="H3K36me3", blue=c("H3K9me3", "H3K27me3"), gold="H3K4me1")){
     nstates <- ncol(clustmeans)
     if (is.null(rownames(clustmeans))) {
         stop("clustmeans matrix must have rownames set")}
@@ -130,15 +130,6 @@ automaticColoring <- function(clustmeans, markToCol=list(red="H3K4me3", green4="
         anchors[i] <- which.max(scores)
     }
     
-    #try to detect the background cluster
-    if (!is.null(background)){
-        #the indices in the array scores correspond to the indices for the columns in clustmeans
-        #because the invalid clusters get removed by table()
-        scores <- table(clusts)
-        scores[anchors[anchors>0]] <- -1
-        anchors[nanchors] <- which.max(scores)
-    }
-    
     #compute distance matrix
     #dmat <- kfoots:::KL_dist_mat(clustmeans+1e-6, 1)
     dmat <- as.matrix(dist(t(log(clustmeans+1e-6))))
@@ -163,9 +154,9 @@ automaticColoring <- function(clustmeans, markToCol=list(red="H3K4me3", green4="
     #anchor rgb colors
     anchrgb <- t(col2rgb(anchcol))
     #valid cluster colors
-    validrgb <- rgb(round(t(apply(wts, 2, function(wt) colSums(wt*anchrgb)))), maxColorVal=255)
+    validrgb <- rgb(round(t(apply(wts, 2, function(wt) colSums(wt*anchrgb)))), maxColorValue=255)
     #colors for cluster that don't occur (this shouldn't matter)
-    nonvalidrgb <- rgb(t(col2rgb("white")), alpha=0, maxColorVal=255)
+    nonvalidrgb <- rgb(t(col2rgb("white")), alpha=0, maxColorValue=255)
     
     res <- rep(nonvalidrgb, nstates)
     res[validClust] <- validrgb

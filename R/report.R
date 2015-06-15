@@ -150,7 +150,7 @@ reportMeans <- function(means, modelPath, statecolors, outdir, prefix){
     path <- makePath(outdir, prefix, "means.png")
     #plot mean matrix
     myheat(t(means), xlab="mark", ylab="state", zlab="mean count", 
-        main="mean counts", dev=path, col=heatpal, rowCol=statecolors)
+        main="mean counts", dev=path, col=heatpal, rowColors=statecolors)
     #return html
     htmlImgLink(path, modelPath)
 }
@@ -161,7 +161,7 @@ reportLMeans <- function(lmeans, statecolors, outdir, prefix){
     write.table(lmeans, col.names=T, row.names=T, file=paths[1], quote=F, sep="\t")
     #make plot
     myheat(t(lmeans), xlab="mark", ylab="state", zlab="log(mean count + 1)", 
-        main="log of mean counts", dev=paths[2], col=heatpal,rowCol=statecolors)
+        main="log of mean counts", dev=paths[2], col=heatpal,rowColors=statecolors)
     #return html
     htmlImgLink(paths[2], paths[1])
 }
@@ -170,8 +170,8 @@ reportTrans <- function(transP, modelPath, statecolors, outdir, prefix){
     path <- makePath(outdir, prefix, "transP.png")
     #plot transition probabilities
     myheat(transP, xlab="state to", ylab="state from", zlab="probability",
-        main="transition\nmatrix", dev=path, col=heatpal, rowCol=statecolors, 
-        colCol=statecolors)
+        main="transition\nmatrix", dev=path, col=heatpal, rowColors=statecolors, 
+        colColors=statecolors)
     #return html
     htmlImgLink(path, modelPath)
 }

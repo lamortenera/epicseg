@@ -23,7 +23,7 @@ seq.pal <- function(n, name="RdYlGn"){
     maxcol <- brewer.pal.info[name, "maxcolors"]
     origpal <- brewer.pal(maxcol, name)
     cramp <- colorRamp(origpal)
-    rgb(cramp(seq(0, 1, length.out=n)), max=255)
+    rgb(cramp(seq(0, 1, length.out=n)), maxColorValue=255)
 }
 
 #extends the palettes from RColorBrewer to an infinite number of colors
@@ -44,7 +44,7 @@ qual.pal <- function(n, name="Paired"){
         dists <- abs(os - samples)
         samples[which.min(dists)] <- os
     }
-    rgb(cramp(samples), max=255)
+    rgb(cramp(samples), maxColorValue=255)
 }
 
 heatpal <- seq.pal(100, name="Blues")
