@@ -126,7 +126,7 @@ domyheat <- function(mat, xlab=NULL, ylab=NULL, main=NULL, col=heatpal,
     #plot the color key
     if (!is.null(zlab)){
         zseq <- seq(zlim[1], zlim[2], length.out=length(col))
-        ck.mat <- matrix(ncol=1,zseq)
+        ck.mat <- matrix(ncol=1,rev(zseq))
         myimage(ck.mat, col=col, zlim=zlim, xlim=c(nx+.5, nx+1.5), ylim=c(0,ny))
         zTicks <- mypretty(zseq)
         zAt <- ny*(zTicks-zlim[1])/diff(zlim)

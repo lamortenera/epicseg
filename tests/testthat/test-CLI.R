@@ -23,6 +23,8 @@ tfails <- function(cmd) expect_error(no(simuCLI_shortcuts(cmd)), label=cmd)
 
 test_that("Command line interface",{
     #GETCOUNTS
+    #this creates tmpdir/countmat.txt, 
+    #which we will base other tests on
     truns(
     "init getcounts --target tmpdir/countmat.txt 
     --regions regs.bed \
@@ -33,7 +35,8 @@ test_that("Command line interface",{
     --mark H3K4me3:bam2 \
     --mark H3K9me3:bam3 \
     --mark Input:bam1")
-
+    
+    
     #check if the automatic region trimming works
     truns(
     "init getcounts -r regs.bed \
@@ -41,7 +44,7 @@ test_that("Command line interface",{
     
     #let's try to give three bam files and two pairedends options (it should throw an error)
     tfails(
-    "init getcounts -r tests/data/regions.bed \
+    "init getcounts -r regs.bed \
     -m H3K4me3:bam1 \
     -m H3K36me3:bam2 \
     -m H3K27me3:bam3 \
@@ -49,53 +52,50 @@ test_that("Command line interface",{
     
     #let's try to give the -p option without a value (it should throw an error)
     tfails(
-    "init getcounts -r tests/data/regions.bed \
+    "init getcounts -r regs.bed \
     -m H3K4me3:bam1 \
     -b 157 -t tmpdir/counts_prova.txt -p")
     
     #check if saving to txt works
     truns(
-    "init getcounts -r tests/data/regions.bed \
+    "init getcounts -r regs.bed \
     --mark H3K4me3:bam1 \
     --mark H3K36me3:bam2 \
     -b 157 -t tmpdir/counts_prova.txt")
     
     #check if it runs with replicate experiments
     truns(
-    "init getcounts -r tests/data/regions.bed \
+    "init getcounts -r regs.bed \
     --mark H3K4me3:bam1 \
     --mark H3K36me3:bam2 \
     --mark H3K36me3:bam3 \
      -b 157 -t tmpdir/counts_prova.txt")
     
+    
     #SEGMENT
     #check if reading counts from a text file works
+    #we will use the output file tmpdir/model.txt for later tests
     truns(
-    "init segment -c tmpdir/counts_prova.txt -r \
-    tmpdir/counts_prova_refined_regions.bed -n 10 --nthreads 4 
+    "init segment -c tmpdir/countmat.txt -r \
+    regs.bed -n 10 --nthreads 4 
     -a genes:bed1 --maxiter 20  --outdir tmpdir")
     
-    truns(
-    "init segment -c tests/data/randomCounts.txt -r \
-    tests/data/regions.bed -n 10 --nthreads 4 \
-    -a genes:bed1  --maxiter 20 --outdir tmpdir")
-    
-    #segment with --model option (the likelihood should start from a lower value than before)
+    #segment with --model option
     truns(
     "init segment -n 10 -m tmpdir/model.txt \
-    -c tests/data/randomCounts.txt -r tests/data/regions.bed --outdir tmpdir/")
+    -c tmpdir/countmat.txt -r regs.bed --outdir tmpdir/")
     
     #let's try with an incomplete model (we delete initP and transP from model.txt)
     system(gsub("tmpdir", tmpdir, "head tmpdir/model.txt -n 15 > tmpdir/incomplete_model.txt"))
     truns(
     "init segment -n 10 -m tmpdir/incomplete_model.txt \
-    -c tests/data/randomCounts.txt -r tests/data/regions.bed --outdir tmpdir")
+    -c tmpdir/countmat.txt -r regs.bed --outdir tmpdir")
     
     #let's try out the predict, collapseInitP and save_rdata flags
     truns(
     "init segment --collapseInitP T --save_rdata \
-    --notrain -m tmpdir/model.txt -c tests/data/randomCounts.txt \
-    -r tests/data/regions.bed -n 10 --outdir tmpdir")
+    --notrain -m tmpdir/model.txt -c tmpdir/countmat.txt \
+    -r regs.bed -n 10 --outdir tmpdir")
     
     #check whether the rdata was created
     expect_true(file.exists(cmd_sc("tmpdir/rdata.Rdata")))
@@ -122,17 +122,17 @@ test_that("Command line interface",{
     #let's try multiple annotations
     truns(
     "init report 
-    -a genes:bed1 --annot mansegm:bed2
+    -a genes:bed1 --annot genes2:bed1
     -m tmpdir/model.txt -s tmpdir/segmentation.bed --outdir tmpdir")
     
     expect_true(file.exists(cmd_sc("tmpdir/annot_genes.txt")))
-    expect_true(file.exists(cmd_sc("tmpdir/annot_mansegm.txt")))
+    expect_true(file.exists(cmd_sc("tmpdir/annot_genes2.txt")))
     
     #now try multiple segmentations
     truns(
     "init report --labels tmpdir/labels.txt  -o tmpdir -m tmpdir/model.txt 
     -s seg1:tmpdir/segmentation.bed -s seg2:tmpdir/segmentation.bed
-    -a mansegm:bed2")
+    -a genes:bed1")
     
 })
 

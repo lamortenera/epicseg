@@ -17,15 +17,14 @@ expect_runs <- function(object, info = NULL, label = NULL){
     expect_that(object, runs, info = info, label = label)
 }
 
-tmpdir <- tempdir()
+tmpdir <- file.path(tempdir(), "epicseg_test")
+dir.create(tmpdir, showW=F)
 #these are shortcuts for the command lines
 shortcuts <- list(
     init="Rscript epicseg.R",
-    tmpdir=tempdir(),
-    bam1="/project/epigenome/IMR90/H3K4me3.bam",
-    bam2="/project/epigenome/IMR90/H3K36me3.bam",
-    bam3="/project/epigenome/IMR90/H3K27me3.bam",
-    bed1="/project/ale/home/data/kfoots_paper/data_old/regions/knownGenes.bed",
-    bed2="/project/ale/home/data/kfoots_paper/data_old/mansegm/IMR90/mansegm.bed",
-    tests="/project/ale/home/data/epicseg_pkg/tests",
-    regs.bed="/project/ale/home/data/epicseg_pkg/tests/data/regions.bed")
+    tmpdir=tmpdir,
+    bam1=system.file("extdata","H3K4me3.bam", package="epicseg"),
+    bam2=system.file("extdata","H3K36me3.bam", package="epicseg"),
+    bam3=system.file("extdata","H3K9me3.bam", package="epicseg"),
+    bed1=system.file("extdata","genes.bed", package="epicseg"),
+    regs.bed=system.file("extdata","contigs.bed", package="epicseg"))

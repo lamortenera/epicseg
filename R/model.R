@@ -31,6 +31,7 @@ validateModel <- function(model, strict=FALSE){
         for (nm in model$emisP){
             needPars <- c("mu", "r", "ps")
             if (!all(needPars %in% names(nm))) stop("missing fields from the emission probabilities")
+            if (any(is.na(unlist(nm)))) stop("NAs/NaNs in the emission probabilities not allowed")
             if (is.null(nmarks)) nmarks <- length(nm$ps)
             if (length(nm$ps) != nmarks) stop("invalid parameters for the emission probabilities")
             if (!isProbVector(nm$ps)) stop("'model$emissP[[i]]$ps' must sum up to 1 for every i")
@@ -173,7 +174,8 @@ readModel <- function(path){
                 r=params[1]
                 mus <- params[2:ncol(emisMat)]
                 mu <- sum(mus)
-                ps <- mus/mu
+                if (mu==0) { ps <- rep(1/length(marks), length(marks))
+                } else ps <- mus/mu
                 list(mu=mu, r=r, ps=ps)
             })
         })

@@ -5,7 +5,8 @@
 \title{Learn a model and produce a segmentation}
 \usage{
 segment(counts, regions, nstates = NULL, model = NULL, notrain = FALSE,
-  collapseInitP = notrain, nthreads = 1, maxiter = 200, ...)
+  collapseInitP = notrain, nthreads = 1, split4speed = FALSE,
+  maxiter = 200, ...)
 }
 \arguments{
 \item{counts}{Count matrix or list of count matrices matching with the
@@ -37,6 +38,12 @@ one initial probabilities vector? If you are not sure
 about what this means, don't set this option.}
 
 \item{nthreads}{number of threads used for learning}
+
+\item{split4speed}{add artificial splits in the input regions to improve
+the parallelism of the forward-backward algorithm. Usually the results change
+very little and the algorithm runs considerably faster, if the number of
+input regions is smaller than the number of threads. See \code{?kfoots} for
+more details.}
 
 \item{maxiter}{Maximum number of iterations for learning.}
 
