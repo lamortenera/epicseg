@@ -2,3 +2,4 @@ language: r
 warnings_are_errors: false
 sudo: required
 bioc_required: true
+r_github_packages: lamortenera/kfoots
