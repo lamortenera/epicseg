@@ -14,7 +14,7 @@ When I last modified this README, the Bioconductor dependencies were `IRanges`, 
 
 ```R
 source("http://bioconductor.org/biocLite.R")
-biocLite("IRanges", "GenomicRanges", "bamsignals", "edgeR")
+biocLite(c("IRanges", "GenomicRanges", "bamsignals", "edgeR"))
 ```
 
 Install and load the `devtools` package to be able to directly install R packages hosted on github :
