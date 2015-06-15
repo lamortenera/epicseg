@@ -7,11 +7,14 @@ epicseg
 Chromatin segmentation in R
 ## Installation
 
-Install `bamsignals` from Bioconductor
+`epicseg` depends on Bioconductor packages, CRAN packages, and another package from github.
+For the installation, most of the work is done by the function `devtools::install_github`. Because lately this function cannot resolve Bioconductor dependencies anymore (see this issue: https://github.com/hadley/devtools/issues/700), we will need to install some Bioconductor packages manually. Below is an example on how to do that. 
+
+When I last modified this README, the Bioconductor dependencies were `IRanges`, `GenomicRanges`, `bamsignals` and `edgeR`. This list might go out of sync as `epicseg` evolves, have a look at the `DESCRIPTION` file to have the complete list (or just wait for error messages during installation) and modify the lines below accordingly, if needed.
 
 ```R
 source("http://bioconductor.org/biocLite.R")
-biocLite("bamsignals")
+biocLite("IRanges", "GenomicRanges", "bamsignals", "edgeR")
 ```
 
 Install and load the `devtools` package to be able to directly install R packages hosted on github :
