@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "array.hpp"
+#include "array.h"
 
 //it also checks that s is a matrix
 inline std::vector<std::string> getRownames(Rcpp::RObject s){

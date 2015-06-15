@@ -117,7 +117,7 @@ automaticColoring <- function(clustmeans, markToCol=list(red="H3K4me3", green4="
     n <- ncol(clustmeans)
     if (n < 3) stop("too few valid clusters...")
     
-    anchcol <- c(names(markToCol), background)
+    anchcol <- names(markToCol)
     nanchors <- length(anchcol)
     anchors <- integer(nanchors)
     

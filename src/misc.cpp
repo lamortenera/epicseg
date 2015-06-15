@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include <iostream>
 #include <fstream>
-#include "clist.hpp"
+#include "clist.h"
 #include <R_ext/Applic.h>
 
 struct Edge {

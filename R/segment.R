@@ -1,11 +1,12 @@
-excludeOptNames <- c("segments", "model", "counts", "colors", "labels")
-    
+#options taken from the report subprogram
+includeOptNames <- c("outdir", "prefix", "annot")
+
 getSegmentOptions <- function(){
     #this is not the actual complete list of options
     #for segmentCLI: the complete list is a merge between
-    #the two lists 'getSegmentOptions()' and 'getReportOptions()' 
-    #minus the options specified in excludeOptNames
-    list(
+    #the two lists 'getSegmentOptions()' and the elements in 'getReportOptions()' 
+    #specified in 'includeOptNames'
+    opts1 <- list(
     list(arg="--counts", type="character", required=TRUE, vectorial=TRUE,
     help="Path to the count matrix. To train a model on multiple datasets, 
     the count matrices must be compatible, i.e. with the same marks and on the
@@ -41,15 +42,13 @@ getSegmentOptions <- function(){
     help="Maximum number of iterations in train mode"),
     list(arg="--save_rdata", flag=TRUE,
     help="Save an R data archive with the results of the segmentation. To
-    see what they are, inside R, type 'library(epicseg)' and '?segment'"))}
+    see what they are, inside R, type 'library(epicseg)' and '?segment'"))
+    opts2 <- makeOptions(getReportOptions())[includeOptNames]
+    c(opts1, opts2)
+}
 
 segmentCLI <- function(args, prog){
-    #name the options in reportOptions
-    reportOptions <- makeOptions(getReportOptions())
-    #options for 'reportCLI' to use also in 'segmentCLI'
-    subReportOptNames <- setdiff(names(reportOptions), excludeOptNames)
-    #merge the two option lists
-    segmentOptions <- c(getSegmentOptions(), reportOptions[subReportOptNames])
+    segmentOptions <- getSegmentOptions()
     #parse the options
     opt <- parseArgs(segmentOptions, args, prog)
     #deal with the two scenarios for the 'counts' option
@@ -60,8 +59,9 @@ segmentCLI <- function(args, prog){
         opt$counts <- lapply(setNames(lp$path, lp$label), readCounts)
     }
     #split the options for 'segment' from the options for 'report'
-    sopt <- opt[setdiff(names(opt), subReportOptNames)]
-    ropt <- opt[intersect(names(opt), subReportOptNames)]
+    roptnames <- intersect(includeOptNames, names(opt))
+    sopt <- opt[setdiff(names(opt), roptnames)]
+    ropt <- opt[roptnames]
     #deal with 'save_rdata'
     save_rdata <- !is.null(sopt$save_rdata)
     sopt$save_rdata <- NULL

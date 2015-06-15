@@ -1,9 +1,9 @@
 #include <Rcpp.h>
 #include <R_ext/BLAS.h>
 #include <random>
-#include "tabbing.hpp"
-#include "array.hpp"
-#include "clist.hpp"
+#include "tabbing.h"
+#include "array.h"
+#include "clist.h"
 
 
 

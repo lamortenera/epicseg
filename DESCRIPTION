@@ -1,11 +1,13 @@
 Package: epicseg
 Type: Package
-Title: Chromatin segmentation in R
+Title: Chromatin Segmentation in R
 Version: 1.0
 Date: 2014-12-05
 Author: Alessandro Mammana
 Maintainer: Alessandro Mammana <mammana@molgen.mpg.de>
-Description: Package for chromatin segmentation in R and from the command line
+Description: This package computes a segmentation of the genome and a
+    probabilistic model based on count data from histone marks (or other NGS
+    experiments).
 License: GPL-2
 SystemRequirements: C++11 
 Depends: R (>= 3.1.0)

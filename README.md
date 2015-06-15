@@ -1,6 +1,8 @@
 epicseg
 =======
 
+[![Build Status](https://travis-ci.org/lamortenera/epicseg.svg?branch=master)](https://travis-ci.org/lamortenera/epicseg)
+
 
 Chromatin segmentation in R
 ## Installation
