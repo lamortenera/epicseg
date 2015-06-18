@@ -12,25 +12,25 @@ getSegmentOptions <- function(){
     the count matrices must be compatible, i.e. with the same marks and on the
     same genomic regions. If this option is repeated the paths must be labelled,
     example:
-    --counts dataset1:path1/counts.txt --counts dataset2:path2/counts.txt"),
+    `--counts dataset1:path1/counts.txt --counts dataset2:path2/counts.txt`"),
     list(arg="--regions", type="character", required=TRUE, parser=readRegions,
-    help="Path to the .bed file with the genomic regions associated to 
-    the count matrix. Only the first three fields of the bed file
-    will be read. (required)"),
+    help="Path to the BED file with the genomic regions associated to 
+    the count matrix. Only the first three fields of the BED file
+    will be read."),
     list(arg="--nstates", type="integer", required=TRUE,
     help="Number of states to use for training"),
     list(arg="--model", type="character", parser=readModel,
     help="Path to the file with the parameters of the HMM.
     The model contains the initial parameters for learning.
-    If --notrain is set, no learning will take place and all
+    If `--notrain` is set, no learning will take place and all
     model parameters must be specified."),
     list(arg="--notrain", flag=TRUE,
     help="The provided model will be used 'as-is' without training."),
     list(arg="--collapseInitP", type="logical", meta="true_or_false",
     help="In case a model with multiple initial probabilities is provided,
     should those probabilities be averaged? If you are not sure about what
-    this means, don't set this option (the default is FALSE in train mode
-    and TRUE in predict mode)"),
+    this means, the default is fine (the default is `FALSE` in train mode
+    and `TRUE` in predict mode)"),
     list(arg="--nthreads", type="integer", default=formals(segment)$nthreads,
     help="Number of threads to be used"),
     list(arg="--split4speed", type="logical", default=formals(segment)$split4speed,
@@ -42,7 +42,7 @@ getSegmentOptions <- function(){
     help="Maximum number of iterations in train mode"),
     list(arg="--save_rdata", flag=TRUE,
     help="Save an R data archive with the results of the segmentation. To
-    see what they are, inside R, type 'library(epicseg)' and '?segment'"))
+    see what they are, inside R, type `library(epicseg)` and `?segment`"))
     opts2 <- makeOptions(getReportOptions())[includeOptNames]
     c(opts1, opts2)
 }

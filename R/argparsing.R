@@ -7,7 +7,7 @@ parseArgs <- function(optList, args, launcherName="<script>"){
             cat(e$message, fill=TRUE)
             cat("@@@", fill=TRUE)
             printUsage(launcherName, opts)
-            stop()
+            quit(status=1)
         })
     
     values

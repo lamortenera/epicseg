@@ -5,9 +5,14 @@ Version: 1.0
 Date: 2014-12-05
 Author: Alessandro Mammana
 Maintainer: Alessandro Mammana <mammana@molgen.mpg.de>
-Description: This package computes a segmentation of the genome and a
-    probabilistic model based on count data from histone marks (or other NGS
-    experiments).
+Description: EpiCSeg (Epigenome Count-based Segmentation) is a software for 
+    annotating the genome based on the state of the chromatin. It provides
+    tools for extracting count data from BAM files, typlically corresponding
+    to ChIP-seq experiments for histone marks (but other choices are possible)
+    it learns a statistical model for the readcounts based on a HMM,
+    it annotates annotates the genome, and it provides tools for displaying
+    and analyzing the obtained models and segmentations. EpiCSeg can be used
+    as an R package or from the command line via Rscript.
 License: GPL-2
 SystemRequirements: C++11 
 Depends: R (>= 3.1.0)
@@ -21,4 +26,4 @@ Imports:
     bamsignals,
     edgeR
 LinkingTo: Rcpp
-Suggests: testthat
+Suggests: testthat, knitr

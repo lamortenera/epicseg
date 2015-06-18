@@ -92,10 +92,10 @@ test_that("Normalization routines",{
     
     #test that aggregating 3 tracks is what you expect
     binsize <- 157
-    regions <- readRegions(shortcuts$regs.bed)
+    regions <- readRegions(system.file("extdata", "contigs.bed", package="epicseg"))
     regions <- refineRegions(regions, binsize=binsize)
     labs <- c("H3K4me3", "H3K36me3", "H3K9me3")
-    paths <- unlist(shortcuts[c("bam1", "bam2", "bam3")])
+    paths <- system.file("extdata", paste0(labs, ".bam"), package="epicseg")
     mp <- paste(sep=":", c(labs, rep("mixed", 3)), rep(paths,2))
             
     bamtab <- makeBamtab(mp)

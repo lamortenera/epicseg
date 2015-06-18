@@ -1,6 +1,6 @@
 getGetcountsOptions <- function(){list(
     list(arg="--regions", type="character", required=TRUE, parser=readRegions,
-    help="Path to the bed file with the genomic regions of interest.
+    help="Path to the BED file with the genomic regions of interest.
     These regions will be automatically partitioned into smaller, 
     consecutive bins. Only the first three fields in the file matter. 
     If the region lengths are not multiples of the given binsize
@@ -13,13 +13,13 @@ getGetcountsOptions <- function(){list(
     those specified in the bed file. Entries with the same mark name will
     be treated as replicates and collapsed into one experiment.
     This option must be repeated for each mark, for example:
-    '-m H3K4me3:/path1/foo1.bam -m H3K36me3:/path2/foo2.bam'"),
+    `-m H3K4me3:/path1/foo1.bam -m H3K36me3:/path2/foo2.bam`"),
     list(arg="--target", type="character", required=TRUE, parser=validatePath,
     help="Full path to the count matrix that will be produced as output.
     To save the matrix as an R archive, provide a path that ends
-    in '.Rdata' or '.rda', otherwise it will be saved as a text file.
+    in `.Rdata` or `.rda`, otherwise it will be saved as a text file.
     Using R archives, writing the file will be a bit slower,
-    but reading it will be considerably faster. (required)"),
+    but reading it will be considerably faster."),
     list(arg="--binsize", type="integer", default=formals(getcounts)$binsize,
     help="Size of a bin in base pairs. Each given region will be partitioned into
     bins of this size."),
@@ -35,7 +35,7 @@ getGetcountsOptions <- function(){list(
     are mapped will be considered and assigned to the bin where the 
     midpoint of the read pair is located. Specify this option 
     once for all marks, or specify it as many times as there are marks.
-    If this flag is set, the 'shift' option will be ignored."),
+    If this flag is set, the `shift` option will be ignored."),
     list(arg="--shift", type="integer", vectorial=TRUE, default=75,
     help="Shift the reads in the 5' direction by a fixed number
     of base pairs. The read will be assigned to the bin where the 
@@ -110,7 +110,7 @@ getcounts <- function(regions, bamtab, binsize=200, repFun=defaultRepFun,
     if (npaths==0) stop("no marks provided")
        
     message("getting counts")
-    countsList <- mclapply(mc.cores=nthreads, 1:npaths, function(i){
+    countsList <- safe_mclapply(mc.cores=nthreads, 1:npaths, function(i){
         b <- bamtab[i,]
         if (b$pairedend) b$shift <- 0
         b$pairedend <- ifelse(b$pairedend, "midpoint", "ignore")

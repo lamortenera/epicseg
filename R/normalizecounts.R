@@ -3,15 +3,15 @@ triggerOverwrite <- "-"
 getNormalizeCountsOptions <- function(){
     list(
     list(arg="--counts", type="character", required=TRUE, vectorial=TRUE, 
-    help="Paths to the count matrices such as those produced by 'getcounts'"),
+    help="Paths to the count matrices such as those produced by `getcounts`"),
     list(arg="--suffix", type="character", parser=sanitizeFilename,
     default=defSuffix,
     help=paste0("Each normalized count matrix will be written in a filename 
     similar to that of the unnormalized matrix. A suffix will be added 
-    before the file extension, Example:
-    Input: 'path/to/counts.Rda', output: 'path/to/counts", defSuffix, ".Rda'
+    before the file extension, For example,
+    input: `path/to/counts.Rda`, output: `path/to/counts", defSuffix, ".Rda`.
     Set this option to change this behaviour. To overwrite the orignal matrices,
-    give the argument \"", triggerOverwrite, "\".")),
+    give the argument `", triggerOverwrite, "`.")),
     list(arg="--nthreads", type="integer", help="Number of threads to use"))
 }
 
@@ -79,9 +79,9 @@ normalizecounts <- function(clist, normFun=quantileNormalization, nthreads=1, ..
     nthreadsOuter <- min(nthreads, length(mlist))
     nthreadsInner <- floor(nthreads/nthreadsOuter)
     if ("nthreads" %in% names(formals(normFun))){
-        mlist <- mclapply(mc.cores=nthreadsOuter, mlist, normFun, 
+        mlist <- safe_mclapply(mc.cores=nthreadsOuter, mlist, normFun, 
             nthreads=nthreadsInner, ...)
-    } else mlist <- mclapply(mc.cores=nthreadsOuter, mlist, normFun, ...)
+    } else mlist <- safe_mclapply(mc.cores=nthreadsOuter, mlist, normFun, ...)
     #convert back to a clist
     setNames(mlist2clist(mlist, nthreads=nthreads), names(clist))
 }

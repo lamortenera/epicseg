@@ -18,13 +18,43 @@
 #' @import edgeR
 NULL
 
-#writes a file that can be used as a launcher
-#to use epicseg through the 
-#command line interface. The parameter 'dest' should end in '.R'
-getLauncher <- function(dest){
-    writeLines(c(
-    "cat('loading libraries\\n')",
-    "library(epicseg)",
+CLIusage <- 
+"To use EpiCSeg from the command line, you need to:
+
+1. first install the epicseg R package from the github repository
+2. create a launcher to be used with Rscript. This is done
+by typing `epicseg:::getLauncher(\"epicseg.R\")` at the R interactive 
+terminal, which will create the file `epicseg.R` in your working directory. 
+You can move and rename this file the way you want. 
+3. To use it, type `Rscript epicseg.R subprogram arguments`.
+In UNIX you can also simply do `./epicseg.R subprogram arguments` provided that
+you have execution permission on the file `.epicseg.R`. 
+4. To see what the available subprograms are, simply type: 
+`Rscript epicseg.R` 
+5. To see which arguments each subprogram needs, you can type: 
+`Rscript epicseg.R subprogram`"
+
+
+getLauncher <- function(dest="epicseg.R"){
+    RscriptPath <- file.path(Sys.getenv("R_HOME"), "bin", "Rscript")
+    shebang <- NULL
+    if (!file.exists(RscriptPath)) {
+        warning("Rscript executable not found at the expected location")
+    } else shebang <- paste0("#!", RscriptPath)
+    
+    epicsegPath <- path.package("epicseg")
+    #if the package was loaded with devtools::load_all it is not properly
+    #installed and we need a slightly different launcher
+    if (tryCatch("epicseg" %in% devtools::dev_packages(), error=function(e) FALSE)){
+        devtoolsPath <- find.package("devtools")
+        loadDevtools <- paste0("library(devtools, lib.loc=\"", dirname(devtoolsPath), "\")")
+        loadEpicseg <- paste0("devtools::load_all(\"", epicsegPath, "\", quiet=TRUE)")
+        loadLibs <- paste(sep="\n", loadDevtools, loadEpicseg)
+    } else {
+        loadLibs <- paste0("library(epicseg, lib.loc=\"", dirname(path.package("epicseg")), "\")")
+    }
+    
+    writeLines( c(shebang, "cat('loading epicseg\\n')", loadLibs,
     "epicseg:::CLI(args=commandArgs(trailingOnly=TRUE), epicseg:::getProg())"),
     dest)
 }
@@ -50,18 +80,24 @@ print_CLI <- function(prog, subprograms){
 #segmentCLI, in the file segment.R
 #reportCLI, in the file report.R
 #getcountsCLI, in the file getcounts.R
-CLI <- function(args, prog){
-    CLIsubprograms <- list(
-    getcounts=list(desc="Produce a counts matrix from several bam files", fun=getcountsCLI),
-    normalizecounts=list(desc="Normalize several count matrices", fun=normalizecountsCLI),
-    segment=list(desc="Produce a segmentation and a report", fun=segmentCLI),
-    report=list(desc="Produce a report for a given segmentation", fun=reportCLI))
+#normalizecountsCLI, in the file normalizecounts.R
+getCLIsubprograms <- function(){list(
+    getcounts=list(desc="Produce a counts matrix from several bam files", 
+    fun=getcountsCLI, cliargs=getGetcountsOptions),
+    normalizecounts=list(desc="Normalize several count matrices", 
+    fun=normalizecountsCLI, cliargs=getNormalizeCountsOptions),
+    segment=list(desc="Produce a segmentation and a report",
+    fun=segmentCLI, cliargs=getSegmentOptions),
+    report=list(desc="Produce a report for a given segmentation", 
+    fun=reportCLI, cliargs=getReportOptions))}
     
+CLI <- function(args, prog){
+    CLIsubprograms <- getCLIsubprograms()
     if (args[1] %in% names(CLIsubprograms)){
         CLIsubprograms[[args[1]]]$fun(args[-1], paste(prog, args[1]))
     } else {
         print_CLI(prog, CLIsubprograms)
-        stop()
+        quit(status=1)
     }
 }
 
@@ -135,3 +171,10 @@ label_sc_path <- function(l_p, unique.labels=FALSE){
     }
     data.frame(label=lp[1,], path=lp[2,], stringsAsFactors=F)
 }
+
+#make sure that errors occurring in mclapply get propagated
+propagateErrors <- function(l){
+    for (el in l) if (inherits(el, "try-error")) stop(el)
+    l
+}
+safe_mclapply <- function(...) propagateErrors(mclapply(...))

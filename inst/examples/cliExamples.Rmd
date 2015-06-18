@@ -1,0 +1,253 @@
+### Command line environment
+
+In all examples we will assume that:
+
+1. A UNIX system is used. Windows can also be used, but these examples need
+to be slightly adapted.
+2. A launcher called `epicseg.R` has been created using the 
+`epicseg:::getLauncher` function.
+3. You have execution permissions for the launcher. If not, type at the command
+line:
+    
+        chmod 700 epicseg.R
+
+4. The launcher is in a folder listed in your `PATH` environment variable, if
+this is not the case you can add it by typing at the command line:
+    
+        export PATH=/path/to/the/launcher/:$PATH
+
+5. You have some input data to work with. You can reproduce these examples by 
+setting the `indir` environment variable
+to the value returned by the R code 
+`system.file("extdata", package="epicseg")`
+6. You have an output folder `${outdir}` where to store files created by 
+EpiCSeg. This could be a new empty directory to make sure that you are not
+overwriting anything.
+
+### Typical workflow
+
+Typically you just need to 
+
+1. create a count matrix with the `getcounts` subprogram
+2. produce a segmentation with the `segment` subprogram
+3. sometimes you might want to get a nicer output by using the 
+`report` subprogram.
+
+#### Creating the count matrix
+
+The main input of EpiCSeg are read counts for a set of histone marks. More 
+precisely, you need to select which experiments to use (in BAM format, already 
+indexed), in which genomic regions to count the reads, and how large the bins 
+should be.
+
+Here we are going to use three BAM files, a bin size of 200 base pairs (the 
+default) and the following BED file:
+```{bash}
+cat ${indir}/contigs.bed
+```
+
+This is done with the `getcounts` subprogram:
+
+```{bash, results="hide"}
+epicseg.R getcounts --mark H3K4me3:${indir}/H3K4me3.bam \
+                    --mark H3K36me3:${indir}/H3K36me3.bam \
+                    --mark H3K9me3:${indir}/H3K9me3.bam \
+                    --regions ${indir}/contigs.bed --binsize 200 \
+                    --target ${outdir}/counts.txt
+```
+
+Which creates a count matrix in text format:
+
+```{bash}
+head -n 5 ${outdir}/counts.txt
+```
+
+Note that the count matrix and the genomic regions are linked and they
+should always be used together.
+
+In this case the regions could be easily splitted into bins of size 200 because
+each region had a width multiple of 200. If this is not the case, the regions
+are automatically refined, and a new BED file will be created, like in this
+case:
+
+```{bash, results="hide"}
+epicseg.R getcounts -m H3K4me3:${indir}/H3K4me3.bam \
+                    -m H3K36me3:${indir}/H3K36me3.bam \
+                    -m H3K9me3:${indir}/H3K9me3.bam \
+                    -r ${indir}/contigs.bed --binsize 220 \
+                    -t ${outdir}/counts.txt
+```
+
+This creates the files `${outdir}/counts.txt` (which, in this example, got
+overwritten by the second call to `getcounts`), plus the BED file 
+`${outdir}/counts_refined_regions.bed`:
+
+```{bash}
+cat ${outdir}/counts_refined_regions.bed
+```
+
+Note that:
+
+1. the refined regions are always contained in the original ones
+2. start and end coordinate of each region are multiples of the chosen binsize
+3. the count matrix refers to the refined regions (if it was necessary to 
+refine them).
+4. if you computed the count matrix and your regions by means other 
+than EpiCseg, that's totally fine, as long as the regions are a valid BED file,
+the count matrix is tab separated and each column is labelled.
+
+#### Fitting the model and producing the segmentation
+
+Training EpiCSeg's model, inferring the state for each bin and producing an
+HTML report is done all at once by the `segment` subprogram.
+You just need to specify your regions (the refined ones, if it was necessary to
+refine them), your counts and the number of states that you want.
+
+```{bash, results="hide"}
+epicseg.R segment --counts ${outdir}/counts.txt \
+                  --regions ${outdir}/counts_refined_regions.bed \
+                  --nstates 5 --outdir ${outdir} --prefix myFirstSegmentation_
+```
+
+This creates a bunch of files with filenames starting with 
+`${outdir}/myFirstSegmentation_`. Among these the most important are:
+
+1. the file `${outdir}/myFirstSegmentation_lmeans.png` shows
+    the average levels of histone marks for each state. 
+    <center>
+    ```{r, echo=FALSE, results="asis"}
+    cat(paste0("![](",Sys.getenv("outdir"),"/myFirstSegmentation_lmeans.png)"))
+    ```
+    </center>
+
+2. the file `${outdir}/myFirstSegmentation_model.txt` contains the parameter
+    of the obtained model. This is useful if you want to use the learned model
+    on other data or if you want to refine your output files with the 
+    `report` subprogram. 
+
+3. the file `${outdir}/myFirstSegmentation_segmentation.bed` is the segmentation
+    in bed format.
+
+4. the file `${outdir}/myFirstSegmentation_report.html` is a web page showing
+    all plots and results.
+
+#### Producing a better report
+
+Suppose that you are not happy with the colors automatically assigned by 
+EpiCSeg, or you want to assign labels to each state, or you want to see where 
+the states tend to localize with respect to annotated genes. You can use the 
+`report` subprogram  for that. 
+
+We need to specify the model and the segmentation (the BED file) produced
+with `segment`.
+Here we specify colors and labels via simple text files and a gene annotation 
+via a BED file.
+
+```{bash}
+printf "red\ngold\ngreen4\ngray\nblue\n" > ${outdir}/myColors.txt
+printf "promoter\nactive\ntranscribed\ninactive\nrepressed\n" > ${outdir}/myLabels.txt
+```
+
+```{bash, results="hide"}
+epicseg.R report  --model ${outdir}/myFirstSegmentation_model.txt \
+                  --segments ${outdir}/myFirstSegmentation_segmentation.bed \
+                  --annot genes:${indir}/genes.bed \
+                  --colors ${outdir}/myColors.txt \
+                  --labels ${outdir}/myLabels.txt \
+                  --outdir ${outdir} --prefix nicerReport_
+```
+
+Now our heatmap looks better:
+
+<center>
+```{r, echo=FALSE, results="asis"}
+cat(paste0("![](",Sys.getenv("outdir"),"/nicerReport_lmeans.png)"))
+```
+</center>
+
+And we can see how states relate to genes (this was also possible
+by setting the `--annot` option directly in the `segment` subprogram):
+
+<center>
+```{r, echo=FALSE, results="asis"}
+cat(paste0("![](",Sys.getenv("outdir"),"/nicerReport_annot_genes.png)"))
+```
+</center>
+
+### Non-basic usage
+
+#### Learn states from different datasets
+
+Sometimes you have two or more sets of experiments that you want to use for
+chromatin segmentation, where each set comes from a different individual or
+cell type, so that you can look at differences between chromatin states from
+one individual to another.
+
+To do this in EpiCSeg, you need a slightly different workflow:
+
+1. use the `getcounts` subprogram for each dataset/individuals/cell-types separately
+2. make the datasets comparable with the `normalizecounts` subprogram
+3. use all count matrices with `segment`
+
+Here we make two datasets by changing the association between labels and
+file names. Of course, this doesn't make sense and it's only to get some data
+for our example.
+
+```{bash, results="hide"}
+epicseg.R getcounts -m H3K4me3:${indir}/H3K4me3.bam \
+                    -m H3K36me3:${indir}/H3K36me3.bam \
+                    -m H3K9me3:${indir}/H3K9me3.bam \
+                    -r ${indir}/contigs.bed \
+                    -t ${outdir}/sample1.txt
+
+epicseg.R getcounts -m H3K4me3:${indir}/H3K36me3.bam \
+                    -m H3K36me3:${indir}/H3K9me3.bam \
+                    -m H3K9me3:${indir}/H3K4me3.bam \
+                    -r ${indir}/contigs.bed \
+                    -t ${outdir}/sample2.txt
+```
+
+Here we make the two count matrices `sample1.txt` and `sample2.txt` comparable.
+
+```{bash, results="hide"}
+epicseg.R normalizecounts -c ${outdir}/sample1.txt -c ${outdir}/sample2.txt
+```
+
+This created the normalized count matrices `sample1_norm.txt` and 
+`sample2_norm.txt`. Now we use them for segmentation:
+
+```{bash, results="hide"}
+epicseg.R segment -c sample1:${outdir}/sample1_norm.txt \
+                  -c sample2:${outdir}/sample2_norm.txt \
+                  -r ${indir}/contigs.bed \
+                  -n 5 --outdir ${outdir} --prefix comparison_
+```
+
+Now you can, for instance, open the two BED files `comparison_segmentation_sample1.bed`
+and `comparison_segmentation_sample2.bed` in the genome browser and look at 
+differences, or do more advanced analyses in R.
+
+#### Aggregating replicate experiments
+
+Sometimes you have replicates for a particular ChIP-seq experiment and you
+want to take some sort of average in order to improve the quality of the experiment.
+This is handled by the `getcounts` subprogram by providing the same label
+more than once.
+
+Here we are treating the H3K36me3 and H3K9me3 samples as replicates, which does
+not make sense and it's only to get some data for our example.
+
+```{bash, results="hide"}
+epicseg.R getcounts -m H3K4me3:${indir}/H3K4me3.bam \
+                    -m H3K36me3:${indir}/H3K36me3.bam \
+                    -m H3K36me3:${indir}/H3K9me3.bam \
+                    -r ${indir}/contigs.bed \
+                    -t ${outdir}/aggregatedcounts.txt
+```
+
+By providing the label H3K36me3 twice we averaged two ChIP-seq experiments.
+The resulting count matrix looks like this:
+
+```{bash}
+head -n 5 ${outdir}/aggregatedcounts.txt
+```

@@ -4,7 +4,7 @@ getReportOptions <- function(){list(
     in the bed file must be a number from 1 to the maximum number of states.
     More than one path can be provided if the bed files describe alternative
     segmentations of the same genomic regions and if the paths are labelled, 
-    i.e. of the form LABEL:PATH. "),
+    i.e. of the form `LABEL:PATH`. "),
     list(arg="--model", type="character",  required=TRUE, parser=readModel,
     help="Path to the file with the parameters of the HMM.
     All fields must be present."),
@@ -17,17 +17,17 @@ getReportOptions <- function(){list(
     list(arg="--colors", type="character", parser=readColors,
     help="Path to a text file containing one color per chromatin state.
     Each color must be on a separate line, and they can be specified
-    either as RGB colors 'R,G,B' where 0 <= R,G,B < 256, or as R colors
-    (like 'red', 'gold', 'green4'...)."),
+    either as RGB colors `R,G,B` where 0 <= R,G,B < 256, or as R colors
+    (like `red`, `gold`, `green4`...)."),
     list(arg="--labels", type="character", parser=readLines,
     help="Path to a text file containing one short text label
     per chromatin state. Each label must be on a separate line."),
     list(arg="--annot", type="character", vectorial=TRUE, parser=readAnnotations, meta="label:path",
     help="Genomic annotation to compare with the segmentation. It must
     be specified with a short title (no spaces) and a path to the bed
-    file containing the annotation (the strand matters), separated by ':'.
+    file containing the annotation (the strand matters), separated by `:`.
     This option can be repeated, for example:
-    '--annot genes:/path1/genes.bed --annot cpg:/path2/cpgislands.bed'."))}
+    `--annot genes:/path1/genes.bed --annot cpg:/path2/cpgislands.bed`."))}
 
 reportCLI <- function(args, prog){
     opt <- parseArgs(getReportOptions(), args, prog)
@@ -261,6 +261,7 @@ reportAnnot <- function(annot, name, segments, labels, colors, outdir, prefix){
     paths <- makePath(outdir, prefix, paste0("annot_", name, c(".txt", ".png")))
     cat("processing annotation: '", name, "'\n", sep="")
     prof <- avgStateProfile(annot, segments, nstates, before=5000, after=5000)
+    rownames(prof) <- labels
     png(paths[2])
     plotProfile(prof, colors, main=paste0("states vs ", name))
     dev.off()

@@ -7,10 +7,10 @@ epicseg
 Chromatin segmentation in R
 ## Installation
 
-`epicseg` depends on Bioconductor packages, CRAN packages, and another package from github.
+`epicseg` needs R 3.2 (or newer) and depends on Bioconductor packages, CRAN packages, and another package from github. 
 For the installation, most of the work is done by the function `devtools::install_github`. Because lately this function cannot resolve Bioconductor dependencies anymore (see this issue: https://github.com/hadley/devtools/issues/700), we will need to install some Bioconductor packages manually. Below is an example on how to do that. 
 
-When I last modified this README, the Bioconductor dependencies were `IRanges`, `GenomicRanges`, `bamsignals` and `edgeR`. This list might go out of sync as `epicseg` evolves, have a look at the `DESCRIPTION` file to have the complete list (or just wait for error messages during installation) and modify the lines below accordingly, if needed.
+The Bioconductor dependencies are `IRanges`, `GenomicRanges`, `bamsignals` and `edgeR`. This list might go out of sync as `epicseg` evolves, have a look at the `DESCRIPTION` file to have the complete list (or just wait for error messages during installation) and modify the lines below accordingly, if needed.
 
 ```R
 source("http://bioconductor.org/biocLite.R")
