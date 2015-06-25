@@ -13,7 +13,7 @@ Description: EpiCSeg (Epigenome Count-based Segmentation) is a software for
     it annotates annotates the genome, and it provides tools for displaying
     and analyzing the obtained models and segmentations. EpiCSeg can be used
     as an R package or from the command line via Rscript.
-License: GPL-2
+License: GPL-3
 SystemRequirements: C++11 
 Depends: R (>= 3.1.0)
 Imports: 
