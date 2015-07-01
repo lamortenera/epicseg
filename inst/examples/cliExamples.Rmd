@@ -251,3 +251,21 @@ The resulting count matrix looks like this:
 ```{bash}
 head -n 5 ${outdir}/aggregatedcounts.txt
 ```
+
+### Known issues
+
+#### Outliers
+
+Bins with abnormally high read counts compared to the genome average, especially
+when they appear at the beginning of a chromosome, are known to cause underflow
+errors in the forward-backward algorithm. Unfortunately there is no obvious
+solution to that. These bins should be avoided, by filtering out problematic 
+regions or by correcting the read counts by some other means. 
+
+This can happen, for instance, when the mithocondrial genome is included in the
+set of analyzed regions. Read counts in the mithocondrial genome tend to 
+be orders of magnitude higher than in the rest of the genome, so it is not
+appropriate to include them in the input data (moreover, mithocondria don't have
+chromatin...)
+
+Did you encounter any other issue? File an issue in the github repository!!!

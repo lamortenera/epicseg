@@ -1,16 +1,14 @@
-epicseg
-=======
-
+## EpiCSeg  
 [![Build Status](https://travis-ci.org/lamortenera/epicseg.svg?branch=master)](https://travis-ci.org/lamortenera/epicseg)
 
-
 Chromatin segmentation in R
-## Installation
+
+### Installation
 
 `epicseg` needs R 3.2 (or newer) and depends on Bioconductor packages, CRAN packages, and another package from github. 
-For the installation, most of the work is done by the function `devtools::install_github`. Because lately this function cannot resolve Bioconductor dependencies anymore (see this issue: https://github.com/hadley/devtools/issues/700), we will need to install some Bioconductor packages manually. Below is an example on how to do that. 
+For the installation, most of the work is done by the function `devtools::install_github`. Because lately this function cannot resolve Bioconductor dependencies anymore (see this issue: https://github.com/hadley/devtools/issues/700), we will need to install some Bioconductor packages manually.
 
-The Bioconductor dependencies are `IRanges`, `GenomicRanges`, `bamsignals` and `edgeR`. This list might go out of sync as `epicseg` evolves, have a look at the `DESCRIPTION` file to have the complete list (or just wait for error messages during installation) and modify the lines below accordingly, if needed.
+The Bioconductor dependencies are `IRanges`, `GenomicRanges`, `bamsignals` and `edgeR`. At the interactive R terminal, type:
 
 ```R
 source("http://bioconductor.org/biocLite.R")
@@ -30,20 +28,22 @@ install_github("lamortenera/kfoots")
 install_github("lamortenera/epicseg")
 ```
 
-To use the command line interface to epicseg, you need to create an executable to be used with Rscript:
+### Usage from the command line
 
-```R
-library(epicseg)
-epicseg:::getLauncher("epicseg.R")
-```
+To use EpiCSeg from the command line, you need to:
 
-This creates a launcher called "epicseg.R" in your current working directory.
-To check out the epicseg command line interface you need to have RScript.
+1. create a launcher to be used with Rscript. This is done
+by typing `epicseg:::getLauncher(\"epicseg.R\")` at the R interactive 
+terminal, which will create the file `epicseg.R` in your working directory. 
+You can move and rename this file the way you want. 
+2. To use it, type `Rscript epicseg.R subprogram arguments`.
+In UNIX you can also simply do `./epicseg.R subprogram arguments` provided that
+you have execution permission on the file `.epicseg.R`. 
+3. To see what the available subprograms are, simply type: 
+`Rscript epicseg.R` 
+4. To see which arguments each subprogram needs, you can type: 
+`Rscript epicseg.R subprogram`
 
-If you have it, just type at the terminal, in the same folder where the file "epicseg.R" was created:
+You can find the full manual 
+[HERE!](https://cdn.rawgit.com/lamortenera/epicseg/master/inst/manual.html)
 
-```bash
-Rscript epicseg.R
-```
-
-And follow the instructions

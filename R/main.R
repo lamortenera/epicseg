@@ -18,22 +18,6 @@
 #' @import edgeR
 NULL
 
-CLIusage <- 
-"To use EpiCSeg from the command line, you need to:
-
-1. first install the epicseg R package from the github repository
-2. create a launcher to be used with Rscript. This is done
-by typing `epicseg:::getLauncher(\"epicseg.R\")` at the R interactive 
-terminal, which will create the file `epicseg.R` in your working directory. 
-You can move and rename this file the way you want. 
-3. To use it, type `Rscript epicseg.R subprogram arguments`.
-In UNIX you can also simply do `./epicseg.R subprogram arguments` provided that
-you have execution permission on the file `.epicseg.R`. 
-4. To see what the available subprograms are, simply type: 
-`Rscript epicseg.R` 
-5. To see which arguments each subprogram needs, you can type: 
-`Rscript epicseg.R subprogram`"
-
 
 getLauncher <- function(dest="epicseg.R"){
     RscriptPath <- file.path(Sys.getenv("R_HOME"), "bin", "Rscript")
