@@ -33,7 +33,7 @@ install_github("lamortenera/epicseg")
 To use EpiCSeg from the command line, you need to:
 
 1. create a launcher to be used with Rscript. This is done
-by typing `epicseg:::getLauncher(\"epicseg.R\")` at the R interactive 
+by typing `epicseg:::getLauncher("epicseg.R")` at the R interactive 
 terminal, which will create the file `epicseg.R` in your working directory. 
 You can move and rename this file the way you want. 
 2. To use it, type `Rscript epicseg.R subprogram arguments`.
