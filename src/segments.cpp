@@ -79,7 +79,8 @@ std::vector<Segment> getSegments(Rcpp::RObject gr, Rcpp::IntegerVector states){
     
     //accumulate segments here
     std::vector<Segment> segments;
-    segments.reserve(std::max(10, states.length()/4));
+    int initSize = states.length()/4;
+    segments.reserve(std::max(10, initSize));
     
     
     int stateidx = 0;
