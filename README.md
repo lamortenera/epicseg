@@ -2,7 +2,8 @@
 [![Build Status](https://travis-ci.org/lamortenera/epicseg.svg?branch=master)](https://travis-ci.org/lamortenera/epicseg)
 
 Chromatin segmentation in R. For a full description and for citing us, see the following [article](http://www.genomebiology.com/2015/16/1/151) on Genome Biology:
-A Mammana, HR Chung (2015). Chromatin segmentation based on a probabilistic model for read counts explains a large portion of the epigenome. Genome Biology 2015, 16:151
+
+> A Mammana, HR Chung (2015). Chromatin segmentation based on a probabilistic model for read counts explains a large portion of the epigenome. Genome Biology 2015, 16:151
 
 For using EpiCSeg from the command line, you can find the full manual [HERE!](https://cdn.rawgit.com/lamortenera/epicseg/master/inst/manual.html)
 
