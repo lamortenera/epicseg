@@ -113,6 +113,9 @@ squareCoords <- function(mat, hasRC, hasCC, hasCK){
 domyheat <- function(mat, xlab=NULL, ylab=NULL, main=NULL, col=heatpal,
         zlim=range(mat, na.rm=T), zlab="value", rowColors=NULL, colColors=NULL, ...){
     
+    #avoid null range
+    if (diff(zlim)==0) zlim <- zlim + c(-1,1)
+    
     nx <- ncol(mat)
     ny <- nrow(mat)
     scoords <- squareCoords(mat, !is.null(rowColors), !is.null(colColors), !is.null(zlab))

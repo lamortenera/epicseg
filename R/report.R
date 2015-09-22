@@ -196,8 +196,8 @@ reportModel <- function(model, labels, statecolors, outdir, prefix){
     writeModel(model, modelPath)
     
     nbs_html <- reportNBs(nbs, modelPath, outdir, prefix)
-    means_html <- reportMeans(means[marksOrder,], modelPath, statecolors, outdir, prefix)
-    lmeans_html <- reportLMeans(lmeans[marksOrder,], statecolors, outdir, prefix)
+    means_html <- reportMeans(means[marksOrder,,drop=F], modelPath, statecolors, outdir, prefix)
+    lmeans_html <- reportLMeans(lmeans[marksOrder,,drop=F], statecolors, outdir, prefix)
     trans_html <- reportTrans(model$transP, modelPath, statecolors, outdir, prefix)
     
     htmlSection("1. Model parameters",

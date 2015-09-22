@@ -1,7 +1,7 @@
 /* This file gets automatically copied from your personal library to multiple projects.
 To modify it change the version in /project/ale/home/data/cppstubs/array.h,
 do not modify this version */
-//timestamp: 2015-07-29 13:50:34.846786
+//timestamp: 2015-09-22 19:16:21.262449
 
 #ifndef ARRAY_HPP
 #define ARRAY_HPP

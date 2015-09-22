@@ -67,7 +67,7 @@ avgStateProfile <- function(genes, segm, nstates, before=200, after=200, reflen=
     colnames(mat) <- 1:npos - before
     
     #sort the row names
-    mat <- mat[as.character(1:nstates),]
+    mat <- mat[as.character(1:nstates),,drop=FALSE]
     
     mat
 }

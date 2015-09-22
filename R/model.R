@@ -95,12 +95,13 @@ getMeanMatrix <- function(emisP){
 
 
 plotNBs <- function(nbs, eps=0.2, xlab="count",...){
-    nbs <- nbs[,ncol(nbs):1]
+    nbs <- nbs[,ncol(nbs):1, drop=FALSE]
     ys <- seq(0,1, length.out=ncol(nbs))
     xs <- nbs[1,]
     sds <- sqrt(xs + (xs^2)/nbs[2,])
     xlim <- c(min(xs-sds), max(xs+sds))
-    spacer <- 1/(2*(ncol(nbs)-1))
+    if (ncol(nbs) <= 1) { spacer <- 0.5
+    } else                spacer <- 1/(2*(ncol(nbs)-1))
     ylim <- c(0-spacer,1+spacer)
     par(yaxs="i", las=1, mar=c(5, 7, 4, 1))
     plot(NULL, xlim=xlim, ylim=ylim, yaxt="n", xlab=xlab, ...)

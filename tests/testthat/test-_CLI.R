@@ -84,8 +84,25 @@ test_that("Command line interface",{
     
     
     #SEGMENT
-    #check if reading counts from a text file works
-    #we will use the output file ${outdir}/model.txt for later tests
+    
+    #test segment with a single histone mark
+    truns(
+    "epicseg.R getcounts --target ${outdir}/countmat_onemark.txt \\
+    --regions ${indir}/contigs.bed \\
+    --mark H3K4me3:${indir}/H3K4me3.bam")
+
+    truns(
+    "epicseg.R segment -c ${outdir}/countmat_onemark.txt -r \\
+    ${indir}/contigs.bed -n 2 --nthreads 4 \\
+    -a genes:${indir}/genes.bed --maxiter 20  --outdir ${outdir}")
+    
+    #one histone mark and one state
+    truns(
+    "epicseg.R segment -c ${outdir}/countmat_onemark.txt -r \\
+    ${indir}/contigs.bed -n 1 --nthreads 4 \\
+    -a genes:${indir}/genes.bed --maxiter 20  --outdir ${outdir}")
+    
+    #a more normal usage
     truns(
     "epicseg.R segment -c ${outdir}/countmat.txt -r \\
     ${indir}/contigs.bed -n 10 --nthreads 4 \\
@@ -112,6 +129,9 @@ test_that("Command line interface",{
     #check whether the rdata was created
     truns("ls ${outdir}/rdata.Rdata")
     
+    
+    
+        
     #REPORT
     truns(
     "epicseg.R report -m ${outdir}/model.txt -s ${outdir}/segmentation.bed \\
@@ -185,6 +205,8 @@ test_that("multiple datasets",{
     #check that without labels it fails!
     badcline <- paste0(collapse=" ", "-c ", newtargets)
     tfails(paste0("epicseg.R segment ", badcline, " -n 5 -r ${indir}/contigs.bed -o ${outdir}"))
+    
+    
 })
 
 test_that("usage examples", {
