@@ -164,7 +164,7 @@ void segmentsToBed(Rcpp::RObject segments, std::vector<std::string> labels, std:
         int start = starts[i]-1;
         int end = start+lens[i];
         out << chrs.getValue() << "\t" << start << "\t" << end << "\t" << labels[state];
-        out << "\t0\t+\t" << start << "\t" << end << "\t" << colors[state] << "\n";
+        out << "\t0\t.\t" << start << "\t" << end << "\t" << colors[state] << "\n";
     }
     //close stream
     out.close();

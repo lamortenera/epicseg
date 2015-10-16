@@ -47,6 +47,8 @@ readRegions <- function(path) {
     gr
 }
 
+int2str <- function(v) format(v, trim=TRUE, scientific=FALSE)
+
 #writes a bed file up to the 6th field, 
 #metadata elements are discarded
 #if the strand is present, the score field will be set to 0,
@@ -58,8 +60,9 @@ writeRegions <- function(gr, path){
     chr=        seqnames(gr),
     start=    start(gr)-1,
     end=        end(gr))
-    tab[,2] <- format(tab[,2], trim=TRUE, scientific=FALSE)
-  tab[,3] <- format(tab[,3], trim=TRUE, scientific=FALSE)
+    
+    tab[,2] <- int2str(tab[,2])
+    tab[,3] <- int2str(tab[,3])
     
     if (any(strand(gr)!="*")){
         nms <- names(gr)

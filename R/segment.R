@@ -198,7 +198,25 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     }
     
     #CALL KFOOTS
-    fit <- do.call(kfoots, kfootsOpts)
+    tryCatch(
+        fit <- do.call(kfoots, kfootsOpts)
+        , error=function(e){#deal with underflow error
+            uflowmsg <- "^Underflow error.*@([[:digit:]]*):([[:digit:]]*)@$"
+            if (grepl(uflowmsg, e$message)){
+                #extract the coordinates
+                coords <- gsub(uflowmsg, "\\1 \\2", e$message)
+                coords <- as.integer(strsplit(coords, split=" ")[[1]])
+                binEnd <- start(regions)[coords[1]] + coords[2]*binsize
+                binStart <- binEnd - binsize
+                binSeq <- seqnames(regions)[coords[1]]
+                msg <- paste0(e$message, "\n", 
+                "  Are the read counts near the bin ", 
+                binSeq, ":", int2str(binStart-1), "-", int2str(binEnd-1), 
+                "  abnormally high?\n  Try removing this region")
+                stop(msg)
+            } else stop(e)
+        }
+    )
     
     #REORDER STATES
     fit <- reorderFitStates(fit)

@@ -48,7 +48,8 @@ qual.pal <- function(n, name="Paired"){
 }
 
 heatpal <- seq.pal(100, name="Blues")
-
+myblues <- c("#0000FF", "#0055D4", "#0066FF", "#2A7FFF", "#5599FF", "#80B3FF", "#AACCFF", "#D5E5FF", "#FFFFFF")
+mybluespal <- colorRampPalette(rev(myblues))(100)
 
 toRGBVector <- function(v){
     if (length(v)!=3) return(rep(NA,3))

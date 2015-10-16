@@ -102,6 +102,7 @@ plotProfile <- function(mat, colors, legend.pos="top", xlab="offset",
 
 #clustmeans is a matrix where the columns are clusters and the rows are marks
 #the rows must be named.
+#this function is not used anymore...
 automaticColoring <- function(clustmeans, markToCol=list(red="H3K4me3", green4="H3K36me3", blue=c("H3K9me3", "H3K27me3"), gold="H3K4me1")){
     nstates <- ncol(clustmeans)
     if (is.null(rownames(clustmeans))) {
