@@ -262,9 +262,7 @@ reportAnnot <- function(annot, name, segments, labels, colors, outdir, prefix){
     cat("processing annotation: '", name, "'\n", sep="")
     prof <- avgStateProfile(annot, segments, nstates, before=5000, after=5000)
     rownames(prof) <- labels
-    png(paths[2])
-    plotProfile(prof, colors, main=paste0("states vs ", name))
-    dev.off()
+    plotProfileAndLegend2Dev(prof, colors, dev=paths[2], main=paste0("states vs ", name))
     write.table(prof, file=paths[1], col.names=T, row.names=F, quote=F, sep="\t")
     
     htmlImgLink(paths[2], paths[1])
