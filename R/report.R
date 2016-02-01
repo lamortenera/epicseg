@@ -86,8 +86,9 @@ report <- function(segments, model, outdir=".",
     } else if (inherits(segments, "GRangesList")){
         segmlist <- segments
         segments <- unlist(segments, use.names=FALSE)
-        #this is not a complete check, but it should be enough for most purposes
-        ws <- sum(as(width(segmlist), "CompressedNumericList"))
+        # Checking that the segments in each dataset sum up to the same
+        # total width. Not a complete check, but should be enough for most purposes
+        ws <- sapply(segmlist, function(segm) {sum(as.numeric(width(segm)))})
         if (any(ws != ws[1])) stop("GRanges not on the same genomic regions")
     } else if (is.null(segments)) { stop("'segments' cannot be NULL")
     } else stop("'segments' can be a GRangesList or a GRanges object")
