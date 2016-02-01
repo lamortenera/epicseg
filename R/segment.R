@@ -199,23 +199,8 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     
     #CALL KFOOTS
     tryCatch(
-        fit <- do.call(kfoots, kfootsOpts)
-        , error=function(e){#deal with underflow error
-            uflowmsg <- "^Underflow error.*@([[:digit:]]*):([[:digit:]]*)@$"
-            if (grepl(uflowmsg, e$message)){
-                #extract the coordinates
-                coords <- gsub(uflowmsg, "\\1 \\2", e$message)
-                coords <- as.integer(strsplit(coords, split=" ")[[1]])
-                binEnd <- start(regions)[coords[1]] + coords[2]*binsize
-                binStart <- binEnd - binsize
-                binSeq <- seqnames(regions)[coords[1]]
-                msg <- paste0(e$message, "\n", 
-                "  Are the read counts near the bin ", 
-                binSeq, ":", int2str(binStart-1), "-", int2str(binEnd-1), 
-                "  abnormally high?\n  Try removing this region")
-                stop(msg)
-            } else stop(e)
-        }
+        fit <- do.call(kfoots, kfootsOpts), 
+        error=function(e) kfoots_error_handler(e$message, regions, binsize)
     )
     
     #REORDER STATES
@@ -245,6 +230,51 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     
     
     list(segments=segms, model=model, posteriors=fit$posteriors, states=fit$clusters, viterbi=fit$viterbi$vpath, loglik=fit$loglik)
+}
+
+kfoots_error_handler <- function(err_msg, regions, binsize) {
+    #deal with underflow error
+    uflowmsg <- "^Underflow error.*@([[:digit:]]*):([[:digit:]]*):([[:digit:]]*)@$"
+    if (!grepl(uflowmsg, err_msg)) stop(err_msg)
+    tryCatch({
+        # parse coordinates from error message
+        # we only take the 3rd, because there is no guarantee that
+        # the regions used by kfoots are the same as those in the
+        # 'regions' variable (because of the 'split4speed' option)
+        coords <- gsub(uflowmsg, "\\1 \\2 \\3", err_msg)
+        coords <- as.integer(strsplit(coords, split=" ")[[1]])
+        absbin <- coords[3]
+        # get the genomic range that caused the underflow
+        bin <- getBin(absbin, regions, binsize)
+        if (is.null(bin)) stop(err_msg)
+        
+        msg <- paste0(err_msg, "\n Are the read counts near the bin ",
+                        seqnames(bin), ":", int2str(start(bin)-1), "-",
+                        int2str(end(bin)), 
+                        " abnormally high?\n Try to remove this region")
+        stop(msg)
+        }, 
+        # this happens if we fail to parse the error message
+        # could be due to an older version of kfoots
+        error=function(e) stop(err_msg)
+    )
+}
+
+getBin <- function(binidx, regions, binsize){
+    ws <- width(regions)/binsize
+    nbins <- sum(ws)
+    binidx <- ((binidx-1) %% nbins) + 1
+    
+    breaks <- cumsum(c(1,ws))
+    starts <- breaks[1:(length(breaks)-1)]
+    ends <- breaks[2:length(breaks)]
+    regidx <- which(starts <= binidx & binidx < ends)[1]
+    if (is.na(regidx)) {return(NULL)}
+    
+    chr <- seqnames(regions)[regidx]
+    beg <- start(regions)[regidx] + (binidx - starts[regidx])*binsize
+    end <- beg + binsize - 1
+    GRanges(seqnames=chr, IRanges(start=beg, end=end))
 }
 
 
