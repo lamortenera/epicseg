@@ -236,7 +236,7 @@ kfoots_error_handler <- function(err_msg, regions, binsize) {
     #deal with underflow error
     uflowmsg <- "^Underflow error.*@([[:digit:]]*):([[:digit:]]*):([[:digit:]]*)@$"
     if (!grepl(uflowmsg, err_msg)) stop(err_msg)
-    tryCatch({
+    msg <- tryCatch({
         # parse coordinates from error message
         # we only take the 3rd, because there is no guarantee that
         # the regions used by kfoots are the same as those in the
@@ -248,16 +248,16 @@ kfoots_error_handler <- function(err_msg, regions, binsize) {
         bin <- getBin(absbin, regions, binsize)
         if (is.null(bin)) stop(err_msg)
         
-        msg <- paste0(err_msg, "\n Are the read counts near the bin ",
-                        seqnames(bin), ":", int2str(start(bin)-1), "-",
-                        int2str(end(bin)), 
-                        " abnormally high?\n Try to remove this region")
-        stop(msg)
+        paste0(err_msg, "\n Are the read counts near the bin ",
+                    seqnames(bin), ":", int2str(start(bin)-1), "-",
+                    int2str(end(bin)), 
+                    " abnormally high?\n Try to remove this region")
         }, 
         # this happens if we fail to parse the error message
         # could be due to an older version of kfoots
         error=function(e) stop(err_msg)
     )
+    stop(msg)
 }
 
 getBin <- function(binidx, regions, binsize){
