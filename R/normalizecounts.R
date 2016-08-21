@@ -3,7 +3,8 @@ triggerOverwrite <- "-"
 getNormalizeCountsOptions <- function(){
     list(
     list(arg="--counts", type="character", required=TRUE, vectorial=TRUE, 
-    help="Paths to the count matrices such as those produced by `getcounts`"),
+    help="Paths to the count matrices such as those produced by `getcounts`. 
+    All count matrices must have the same marks and the same number of bins"),
     list(arg="--suffix", type="character", parser=sanitizeFilename,
     default=defSuffix,
     help=paste0("Each normalized count matrix will be written in a filename 

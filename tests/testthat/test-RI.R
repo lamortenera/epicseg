@@ -33,6 +33,31 @@ test_that("multiple datasets works",{
 )
 
 
+test_that("bins as regions throws error",{
+    #make a list of count matrices
+    nmats <- 4; nc <- 500; nr <- 5
+    clist <- lapply(1:nmats, function(r) matrix(rpois(nr*nc, lambda=500), nrow=nr))
+    marks <- paste0("mark", 1:nr)
+    for (i in seq_along(clist)) rownames(clist[[i]]) <- marks
+    dsetNames <- paste0("dataset",1:nmats)
+    names(clist) <- dsetNames
+
+    #make some matching regions
+    binsize <- 200
+    gr_good <- GRanges(seqnames="chr1", IRanges(start=1, width=binsize*nc))
+    gr_bad <- GRanges(seqnames="chr1", IRanges(start=1 + binsize*(0:(nc-1)), width=binsize))
+
+    #everything should work
+    suppressMessages(segment(clist, gr_good, 5, verbose=F))
+    suppressMessages(segment(clist, gr_good, 5, verbose=F))
+    #everything should fail
+    expect_error(suppressMessages(segment(clist[[1]], gr_bad, 5, verbose=F)),
+        regexp="no region contains consecutive bins")
+    expect_error(suppressMessages(segment(clist, gr_bad, 5, verbose=F)),
+        regexp="no region contains consecutive bins")
+})
+
+
 test_that("kfoots error handler", {
     # test getBin function
     gr = GRanges(seqnames=c(1,    1,    2,   3), 

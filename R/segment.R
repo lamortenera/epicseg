@@ -15,8 +15,9 @@ getSegmentOptions <- function(){
     `--counts dataset1:path1/counts.txt --counts dataset2:path2/counts.txt`"),
     list(arg="--regions", type="character", required=TRUE, parser=readRegions,
     help="Path to the BED file with the genomic regions associated to 
-    the count matrix. Only the first three fields of the BED file
-    will be read."),
+    the count matrix. Only the first three fields of each line
+    will be considered. Typically each region comprises several bins 
+    (for example, one region per chromosome)."),
     list(arg="--nstates", type="integer", required=TRUE,
     help="Number of states to use for training"),
     list(arg="--model", type="character", parser=readModel,
@@ -146,6 +147,7 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     if (is.null(regions) || !inherits(regions, "GRanges")) stop("'regions' must be a GenomicRanges object")
     #check consistency between regions and counts
     binsize <- checkBinsize(regions, ncol(clist[[1]]))
+    if (all(width(regions) <= binsize)) stop("no region contains consecutive bins, cannot fit transition probabilities")
     if (is.null(model) && notrain) stop("no model provided, training necessary")
     if (!is.null(model)){
         #if we can't figure out the number of states from the model

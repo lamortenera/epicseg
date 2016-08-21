@@ -1,5 +1,4 @@
 #include <Rcpp.h>
-#include <R_ext/BLAS.h>
 #include <random>
 #include "tabbing.h"
 #include "array.h"
@@ -14,7 +13,8 @@ inline void sortCounts(T1& source, T2& dest){
     int len = source.len;
     if (len == 0) return;
     //get the maximum and minimum element
-    int smin, smax = source[0];
+    int smin = source[0];
+    int smax = source[0];
     for (int i = 1; i < len; ++i){
         if (source[i] > smax) smax = source[i];
         else if (source[i] < smin) smin = source[i];
