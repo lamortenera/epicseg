@@ -8,6 +8,11 @@
 #' @docType package
 #' @author Alessandro Mammana \email{mammana@@molgen.mpg.de}
 #' @useDynLib epicseg
+#' @importFrom grDevices col2rgb colorRamp dev.new dev.off pdf png rgb
+#' @importFrom graphics abline axis barplot legend lines mtext par plot points polygon strheight strwidth
+#' @importFrom stats dist dnbinom dpois pnbinom ppois setNames
+#' @importFrom utils read.table write.table
+#' @importFrom S4Vectors queryHits subjectHits
 #' @import parallel
 #' @import RColorBrewer
 #' @import Rcpp

@@ -80,7 +80,7 @@ report <- function(segments, model, outdir=".",
     #should always pass)
     validateModel(model, strict=FALSE)
     nstates <- model$nstates
-    #'segmlist' will store the GRangesList object, 'segments' the unlisted data
+    # 'segmlist' will store the GRangesList object, 'segments' the unlisted data
     if (inherits(segments, "GRanges")){
         segmlist <- GRangesList(segments)
     } else if (inherits(segments, "GRangesList")){

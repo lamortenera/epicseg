@@ -11,7 +11,7 @@ avgStateProfile <- function(genes, segm, nstates, before=200, after=200, reflen=
     start(extgenes[gstr!="-"]) <- start(genes[gstr!="-"]) - before
     end(extgenes[gstr!="-"]) <- end(genes[gstr!="-"]) + after
     start(extgenes[gstr=="-"]) <- start(genes[gstr=="-"]) - after
-    end(extgenes[gstr=="-"]) <- end(genes[gstr=="-"]) + before
+    end(extgenes[gstr=="-"]	) <- end(genes[gstr=="-"]) + before
     #segments should be unstranded
     strand(segm) <- "*"
     
@@ -33,16 +33,10 @@ avgStateProfile <- function(genes, segm, nstates, before=200, after=200, reflen=
     
     #rescale the coordinates
     gwidth <- width(genes)[gidx]
-    int <- ovstart - before
-    int[int < 0] <- 0
-    int[int > gwidth] <- gwidth[int > gwidth]
-    ovstart <- ovstart + round(int*reflen/gwidth) - int
+    ovstart <- stretchLens(ovstart - before, gwidth, reflen) + before
     if (any(ovstart>=npos)) stop("something went wrong in rescaling the coordinates")
     #same with the ends
-    int <- ovend - after
-    int[int < 0] <- 0
-    int[int > gwidth] <- gwidth[int > gwidth]
-    ovend <- ovend + round(int*reflen/gwidth) - int
+    ovend <- stretchLens(ovend - after, gwidth, reflen) + after
     if (any(ovend>=npos)) stop("something went wrong in rescaling the coordinates")
     
     #for each start position increase the count in the corresponding column of mat
@@ -72,7 +66,16 @@ avgStateProfile <- function(genes, segm, nstates, before=200, after=200, reflen=
     mat
 }
 
-
+# f(x) is the function that stretches the [0, varLen] interval to [0, refLen],
+# while before 0 and after varLen it has slope 1. 
+stretchLens <- function(lens, varLens, refLen){
+    if (length(lens) != length(varLens)) stop("'lens' and 'varLens' must be 2 parallel vectors")
+	above <- lens > varLens
+	between <- (lens > 0 & lens <= varLens)
+	lens[above] <- (lens + refLen - varLens)[above]
+	lens[between] <- round(lens*refLen/varLens)[between]
+	lens
+}
 
 #get how many inches are needed for plotting the legend (horizontal, vertical)
 #get also the right number of columns

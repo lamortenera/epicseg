@@ -215,5 +215,6 @@ test_that("usage examples", {
     library(knitr)
     #write markdown output in a temporary file
     tmp <- tempfile("cliexamples", tmpdir=Sys.getenv("outdir"), fileext=".md")
-    expect_runs(knit(rmd, tmp))
+    purl(rmd, tmp)
+    expect_runs(source(tmp))
 })

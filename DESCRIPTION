@@ -5,7 +5,7 @@ Version: 1.0
 Date: 2014-12-05
 Author: Alessandro Mammana
 Maintainer: Alessandro Mammana <mammana@molgen.mpg.de>
-Description: EpiCSeg (Epigenome Count-based Segmentation) is a software for 
+Description: EpiCSeg (Epigenome Count-based Segmentation) is a software for
     annotating the genome based on the state of the chromatin. It provides
     tools for extracting count data from BAM files, typlically corresponding
     to ChIP-seq experiments for histone marks (but other choices are possible)
@@ -14,16 +14,21 @@ Description: EpiCSeg (Epigenome Count-based Segmentation) is a software for
     and analyzing the obtained models and segmentations. EpiCSeg can be used
     as an R package or from the command line via Rscript.
 License: GPL-3
-SystemRequirements: C++11 
-Depends: R (>= 3.1.0)
-Imports: 
+SystemRequirements: C++11
+Depends:
+    R (>= 3.1.0)
+Imports:
     parallel,
     RColorBrewer,
     Rcpp (>= 0.11.3),
+    S4Vectors,
     IRanges,
     GenomicRanges,
     kfoots,
     bamsignals,
     edgeR
 LinkingTo: Rcpp
-Suggests: testthat, knitr
+Suggests:
+    testthat,
+    knitr
+RoxygenNote: 5.0.1

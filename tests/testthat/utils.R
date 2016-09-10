@@ -1,21 +1,8 @@
 #do the opposite of "expect_error"
-runs <- function(expr){
+expect_runs <- function(expr, info = NULL, label=NULL){
     res <- try(force(expr), TRUE)
     no_error <- !inherits(res, "try-error")
-    if (no_error) {
-        return(expectation(TRUE, "code generated an error", 
-        "code did not generate an error"))
-    }
-    else {
-        expectation(FALSE, paste0("threw an error:\n", res[1]), "no error thrown")
-    }
-}
-
-expect_runs <- function(object, info = NULL, label = NULL){
-    if (is.null(label)) {
-        label <- testthat:::find_expr("object")
-    }
-    expect_that(object, runs, info = info, label = label)
+    expect_true(no_error, info=info, label=label)
 }
 
 

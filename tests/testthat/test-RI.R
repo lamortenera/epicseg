@@ -1,3 +1,4 @@
+source("utils.R")
 context("R interface")
 
 test_that("multiple datasets works",{
@@ -91,4 +92,14 @@ test_that("kfoots error handler", {
     model2$initP <- cbind(unif_init_p, model$initP)
     expect_error(segment(clist, regions, model=model2, verbose=F),
                  regexp="underflow", ignore.case=T)
+})
+
+test_that("avgStateProfile", {
+	genes <- readRegions(system.file("extdata/genes.bed", package="epicseg"))
+	segms <- readRegions(system.file("extdata/5s_segmentation.bed", package="epicseg"))
+	expect_runs(avgStateProfile(genes, segms, 5))
+	mid_genes <- genes
+	start(genes) <- 0.5*(start(genes) + end(genes))
+	end(genes) <- start(genes)
+	expect_runs(avgStateProfile(genes, segms, 5))
 })
