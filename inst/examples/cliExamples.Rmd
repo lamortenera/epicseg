@@ -1,3 +1,7 @@
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+```
+
 ### Command line environment
 
 In all examples we will assume that:
@@ -42,6 +46,7 @@ should be.
 
 Here we are going to use three BAM files, a bin size of 200 base pairs (the 
 default) and the following BED file:
+
 ```{bash}
 cat ${indir}/contigs.bed
 ```

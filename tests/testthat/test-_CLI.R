@@ -209,12 +209,11 @@ test_that("multiple datasets",{
     
 })
 
-test_that("usage examples", {
+test_that("usage examples/manual", {
     #get location of the Rmarkdown file
-    rmd <- system.file("extdata", "cliExamples.Rmd", package="epicseg")
+    rmd <- system.file("examples", "cliExamples.Rmd", package="epicseg")
     library(knitr)
     #write markdown output in a temporary file
     tmp <- tempfile("cliexamples", tmpdir=Sys.getenv("outdir"), fileext=".md")
-    purl(rmd, tmp)
-    expect_runs(source(tmp))
+    expect_runs(knit(rmd, tmp, quiet=TRUE))
 })

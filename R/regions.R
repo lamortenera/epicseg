@@ -57,9 +57,9 @@ writeRegions <- function(gr, path){
     stopifnot(length(path)==1)
     if (!inherits(gr, "GRanges")) stop("expecting a GRanges object")
     tab <- data.frame(
-    chr=        seqnames(gr),
+    chr=      as.character(seqnames(gr)),
     start=    start(gr)-1,
-    end=        end(gr))
+    end=      end(gr))
     
     tab[,2] <- int2str(tab[,2])
     tab[,3] <- int2str(tab[,3])

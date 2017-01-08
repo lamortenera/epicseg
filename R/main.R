@@ -12,8 +12,9 @@
 #' @importFrom graphics abline axis barplot legend lines mtext par plot points polygon strheight strwidth
 #' @importFrom stats dist dnbinom dpois pnbinom ppois setNames
 #' @importFrom utils read.table write.table
-#' @importFrom S4Vectors queryHits subjectHits
 #' @import parallel
+#' @import S4Vectors
+#' @import methods
 #' @import RColorBrewer
 #' @import Rcpp
 #' @import IRanges
