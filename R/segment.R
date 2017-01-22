@@ -127,7 +127,7 @@ advancedOpts <- c("tol","verbose","nbtype","init","init.nlev", "rmin")
 #'     \item{viterbi}{Same as \code{states}, but using the viterbi algorithm.}
 #'     \item{loglik}{the log-likelihood of the whole dataset.}
 #' @export
-segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, collapseInitP=notrain, 
+segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, collapseInitP=FALSE, 
                                     nthreads=1, split4speed=FALSE, maxiter=200, ...){
     #REFORMAT KFOOTS OPTIONS
     kfootsOpts <- list(...)
@@ -167,7 +167,7 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
             #adapt the initPs to the current set of observations
             nInits <- length(regions)*nmat
             if (!collapseInitP && ncol(model$initP) != nInits){
-                warning("collapsing the initial probabilities for compatibility")
+                warning("collapsing the initial probabilities for compatibility with the new set of observations")
                 collapseInitP <- TRUE
             }
             if (collapseInitP){
@@ -195,7 +195,7 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     }
     #deal with the 'train' option
     if (notrain){
-        kfootsOpts$maxiter <- 1
+        kfootsOpts$maxiter <- 0
         kfootsOpts$verbose <- FALSE
     }
     
@@ -206,11 +206,10 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     )
     
     #REORDER STATES
-    fit <- reorderFitStates(fit)
+    if (is.null(model)) fit <- reorderFitStates(fit)
     #MAKE MODELS
-    if (!notrain){
-        model <- list(nstates=length(fit$models), marks=rownames(clist[[1]]), emisP=fit$models, transP=fit$trans, initP=fit$initP)
-    }
+    model <- list(nstates=length(fit$models), marks=rownames(clist[[1]]), 
+                   emisP=fit$models, transP=fit$trans, initP=fit$initP)
     
     if (nmat > 1){
         #format the data appropriately
@@ -231,7 +230,8 @@ segment <- function(counts, regions, nstates=NULL, model=NULL, notrain=FALSE, co
     }
     
     
-    list(segments=segms, model=model, posteriors=fit$posteriors, states=fit$clusters, viterbi=fit$viterbi$vpath, loglik=fit$loglik)
+    list(segments=segms, model=model, posteriors=fit$posteriors, states=fit$clusters,
+         viterbi=fit$viterbi$vpath, loglik=fit$loglik)
 }
 
 kfoots_error_handler <- function(err_msg, regions, binsize) {

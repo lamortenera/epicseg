@@ -5,7 +5,7 @@
 \title{Learn a model and produce a segmentation}
 \usage{
 segment(counts, regions, nstates = NULL, model = NULL, notrain = FALSE,
-  collapseInitP = notrain, nthreads = 1, split4speed = FALSE,
+  collapseInitP = FALSE, nthreads = 1, split4speed = FALSE,
   maxiter = 200, ...)
 }
 \arguments{

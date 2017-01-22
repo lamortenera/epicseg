@@ -120,7 +120,7 @@ test_that("Command line interface",{
     "epicseg.R segment -n 10 -m ${outdir}/incomplete_model.txt \\
     -c ${outdir}/countmat.txt -r ${indir}/contigs.bed --outdir ${outdir}")
     
-    #let's try out the predict, collapseInitP and save_rdata flags
+    #let's try out the notrain, collapseInitP and save_rdata flags
     truns(
     "epicseg.R segment --collapseInitP T --save_rdata \\
     --notrain -m ${outdir}/model.txt -c ${outdir}/countmat.txt \\
@@ -129,7 +129,14 @@ test_that("Command line interface",{
     #check whether the rdata was created
     truns("ls ${outdir}/rdata.Rdata")
     
-    
+    # make sure that notrain really does not train / rearrange stuff
+    orig_model <- readModel(file.path(Sys.getenv("outdir"), "model.txt"))
+    truns(
+    "epicseg.R segment --notrain -m ${outdir}/model.txt -c ${outdir}/countmat.txt \\
+    -r ${indir}/contigs.bed -n 10 --outdir ${outdir}")
+    new_model = readModel(file.path(Sys.getenv("outdir"), "model.txt"))
+    expect_equal(orig_model, new_model)
+     
     
         
     #REPORT
