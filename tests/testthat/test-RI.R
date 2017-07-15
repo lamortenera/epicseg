@@ -1,15 +1,30 @@
 source("utils.R")
 context("R interface")
 
-test_that("multiple datasets works",{
-    #make a list of count matrices
-    nmats <- 4; nc <- 500; nr <- 5
+make_clist <- function(nmats, nr, nc){
     clist <- lapply(1:nmats, function(r) matrix(rpois(nr*nc, lambda=500), nrow=nr))
     marks <- paste0("mark", 1:nr)
     for (i in seq_along(clist)) rownames(clist[[i]]) <- marks
     dsetNames <- paste0("dataset",1:nmats)
     names(clist) <- dsetNames
+    clist
+}
 
+test_that("can bind large matrices",{
+    # make a list of count matrices
+    # the resulting matrix must have more than 4*10^9 
+    # elements but both ncols and nrows should fit into a int32
+    nmats <- 100; nc <- 1e6; nr <- 50
+    clist <- make_clist(nmats, nr, nc)
+    mat1 <- bindClist(clist, nthreads=4)
+    mat2 <- do.call(cbind, clist)
+    expect_equal(mat1, mat2) 
+}
+
+test_that("multiple datasets works",{
+    #make a list of count matrices
+    nmats <- 4; nc <- 500; nr <- 5
+    clist <- make_clist(nmats, nr, nc)
     #normalize counts
     clist <- normalizecounts(clist)
     for (method in c("TMM", "RLE")){
@@ -37,11 +52,7 @@ test_that("multiple datasets works",{
 test_that("bins as regions throws error",{
     #make a list of count matrices
     nmats <- 4; nc <- 500; nr <- 5
-    clist <- lapply(1:nmats, function(r) matrix(rpois(nr*nc, lambda=500), nrow=nr))
-    marks <- paste0("mark", 1:nr)
-    for (i in seq_along(clist)) rownames(clist[[i]]) <- marks
-    dsetNames <- paste0("dataset",1:nmats)
-    names(clist) <- dsetNames
+    clist <- make_clist(nmats, nr, nc)
 
     #make some matching regions
     binsize <- 200
