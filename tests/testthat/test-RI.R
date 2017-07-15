@@ -19,7 +19,7 @@ test_that("can bind large matrices",{
     mat1 <- bindClist(clist, nthreads=4)
     mat2 <- do.call(cbind, clist)
     expect_equal(mat1, mat2) 
-}
+})
 
 test_that("multiple datasets works",{
     #make a list of count matrices
@@ -44,9 +44,8 @@ test_that("multiple datasets works",{
     expect_equal(dimnames(s$viterbi)[[2]], dsetNames)
     expect_equal(s$model$marks, marks)
     
-    report(s$segments, s$model, outdir=tempdir(), prefix="test")}
-    
-)
+    report(s$segments, s$model, outdir=tempdir(), prefix="test")
+})
 
 
 test_that("bins as regions throws error",{
