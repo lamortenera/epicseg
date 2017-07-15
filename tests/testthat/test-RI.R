@@ -25,6 +25,8 @@ test_that("multiple datasets works",{
     #make a list of count matrices
     nmats <- 4; nc <- 500; nr <- 5
     clist <- make_clist(nmats, nr, nc)
+    dsetNames <- names(clist)
+    marks <- rownames(clist[[1]])
     #normalize counts
     clist <- normalizecounts(clist)
     for (method in c("TMM", "RLE")){
