@@ -126,8 +126,8 @@ Rcpp::IntegerVector smallWeightHamiltonianPath(Rcpp::NumericMatrix dmat){
 
 inline void writeVectors(Rcpp::IntegerVector bigv, Rcpp::List vlist, int nthreads){
     int nv = vlist.length();
-    std::vector<int> breaks(nv + 1);
-    for (int i = 0, acc = 0; i < nv; ++i){
+    std::vector<long int> breaks(nv + 1);
+    for (long int i = 0, acc = 0; i < nv; ++i){
         acc += Rcpp::as<Rcpp::IntegerVector>(vlist[i]).length();
         breaks[i+1] = acc;
     }
@@ -190,7 +190,7 @@ Rcpp::IntegerMatrix bindCList(Rcpp::List clist, int nthreads=1){
     std::vector<std::string> rnames;
     listcubedim(clist, &nmarks, &nbins, &ncounts, rnames);
     
-    Rcpp::IntegerMatrix bigmat(nmarks, nbins*ncounts);
+    Rcpp::IntegerMatrix bigmat(nmarks, ((long int)nbins)*ncounts);
     writeVectors(bigmat, clist, nthreads);
     
     Rcpp::List dnames = Rcpp::List(2); 
