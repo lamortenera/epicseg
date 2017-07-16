@@ -20,7 +20,7 @@ test_that("can bind matrices",{
     # with normal matrices
     nmats <- 100; nc <- 100; nr <- 5
     clist <- make_clist(nmats, nr, nc)
-    mat1 <- bindClist(clist, nthreads=4)
+    mat1 <- bindCList(clist, nthreads=4)
     mat2 <- do.call(cbind, clist)
     expect_equal(mat1, mat2) 
 })
